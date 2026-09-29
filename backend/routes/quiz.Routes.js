@@ -5,15 +5,15 @@ import {
   submitQuiz,
   getQuizResults,
   deleteQuiz,
-} from "../controllers/quiz.Controller";
-import protect from "../middleware/auth";
+} from "../controllers/quiz.Controller.js";
+import protect from "../middleware/auth.js";
 
 const router = express.Router();
 
 // All routes are protected
 router.use(protect);
 
-router.get("/documentId", getQuizzes);
+router.get("/:documentId", getQuizzes);
 router.get("/quiz/:id", getQuizById);
 router.post("/:id/submit", submitQuiz);
 router.get("/:id/results", getQuizResults);

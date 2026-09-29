@@ -12,6 +12,7 @@ import authRoutes from "./routes/auth.Routes.js";
 import documentRoutes from "./routes/document.Routes.js";
 import flashcardRoutes from "./routes/flashcard.Routes.js";
 import aiRoutes from "./routes/ai.Routes.js";
+import quizRoutes from "./routes/quiz.Routes.js";
 
 // Configuration de __dirname pour les modules ES6 (car __dirname n'existe pas nativement en ES modules)
 const __filename = fileURLToPath(import.meta.url);
@@ -48,6 +49,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/documents", documentRoutes);
 app.use("/api/flashcards", flashcardRoutes);
 app.use("/api/ai", aiRoutes);
+app.use("/api/quizzes", quizRoutes);
 
 // Middleware de gestion pour les routes introuvables (404 Not Found)
 app.use((req, res) => {
