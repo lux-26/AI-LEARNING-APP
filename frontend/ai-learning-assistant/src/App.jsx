@@ -20,9 +20,9 @@ import ProfilePage from "./pages/profile/ProfilePage";
 import { useAuth } from "./context/authContext";
 
 const App = () => {
-  const { isAuthenticated, loadind } = useAuth;
+  const { isAuthenticated, loading } = useAuth();
 
-  if (loadind) {
+  if (loading) {
     return (
       <div className="flex items-center justify-center h-screen">
         <p>Loading...</p>
