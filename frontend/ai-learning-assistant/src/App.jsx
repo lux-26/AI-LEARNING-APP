@@ -5,8 +5,8 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
-import LoginPage from "./pages/auth/LoginPage";
-import RegisterPage from "./pages/auth/RegisterPage";
+import LoginPage from "./pages/Auth/LoginPage";
+import RegisterPage from "./pages/Auth/RegisterPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import DashboardPage from "./pages/Dashboard/DashboardPage";
@@ -17,10 +17,10 @@ import FlashcardPage from "./pages/Flashcards/FlashcardPage";
 import QuizTakePage from "./pages/Quizzes/QuizTakePage";
 import QuizResultPage from "./pages/Quizzes/QuizResultPage";
 import ProfilePage from "./pages/profile/ProfilePage";
+import { useAuth } from "./context/authContext";
 
 const App = () => {
-  const isAuthenticated = false;
-  const loadind = false;
+  const { isAuthenticated, loadind } = useAuth;
 
   if (loadind) {
     return (
