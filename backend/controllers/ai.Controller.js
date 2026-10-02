@@ -301,7 +301,7 @@ export const explainConcept = async (req, res, next) => {
 };
 
 // @desc     Get chat history for a document
-// @route    POST /api/ai/chat-history/:documentId
+// @route    GET /api/ai/chat-history/:documentId
 // @access   Private
 export const getChatHistory = async (req, res, next) => {
   try {
@@ -318,7 +318,7 @@ export const getChatHistory = async (req, res, next) => {
     const chatHistory = await ChatHistory.findOne({
       userId: req.user._id,
       documentId: documentId,
-    }).select("message"); // Only rrtrieve the message array
+    }).select("messages"); // Only retrieve the message array
 
     if (!chatHistory) {
       return res.status(200).json({

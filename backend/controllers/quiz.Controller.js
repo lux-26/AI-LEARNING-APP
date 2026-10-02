@@ -16,7 +16,7 @@ export const getQuizzes = async (req, res, next) => {
       success: true,
       count: quizzes.length,
       data: quizzes,
-    }); 
+    });
   } catch (error) {
     next(error);
   }
