@@ -15,7 +15,7 @@ const DocumentDetailPage = () => {
   const { id } = useParams();
   const [document, setDocument] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState("content");
+  const [activeTab, setActiveTab] = useState("Content");
 
   useEffect(() => {
     const fetchDocumentDetails = async () => {

@@ -4,6 +4,10 @@ import { Star, RotateCcw } from "lucide-react";
 const Flashcard = ({flashcard, onToggleStar}) => {
   const [isFlipped, setIsFlipped] = useState(false);
 
+  if (!flashcard) {
+    return null;
+  }
+
   const handleFlip = () => {
     setIsFlipped(!isFlipped);
   };
