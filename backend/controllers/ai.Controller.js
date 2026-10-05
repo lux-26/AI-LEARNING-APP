@@ -4,6 +4,7 @@ import Quiz from "../models/Quiz.js";
 import ChatHistory from "../models/ChatHistory.js";
 import * as geminiService from "../utils/geminiService.js";
 import { findRelevantChunks } from "../utils/textChunker.js";
+import { createNotification } from "../utils/notificationService.js";
 
 // @desc     Générer des fiches à partir du document
 // @route    POST /api/ai/generate-flashcards
@@ -107,6 +108,13 @@ export const generateQuiz = async (req, res, next) => {
       totalQuestions: questions.length,
       userAnswers: [],
       score: 0,
+    });
+
+    await createNotification({
+      user: req.user._id,
+      title: "Quiz créé",
+      message: `Le quiz « ${quiz.title} » a été généré avec succès.`,
+      type: "quiz",
     });
 
     res.status(201).json({
