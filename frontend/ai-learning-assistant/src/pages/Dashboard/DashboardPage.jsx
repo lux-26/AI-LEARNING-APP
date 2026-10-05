@@ -22,7 +22,7 @@ const DashboardPage = () => {
 
         setDashboardData(data.data);
       } catch (error) {
-        toast.error("Failed to fetch dashboard data.");
+        toast.error("Échec du chargement des données du tableau de bord.");
         console.error(error);
       } finally {
         setLoading(false);
@@ -41,7 +41,7 @@ const DashboardPage = () => {
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-slate-100 mb-4">
             <TrendingUp className="w-8 h-8 text-slate-400" />
           </div>
-          <p className="text-slate-600 text-sm">No dashboard data available</p>
+          <p className="text-slate-600 text-sm">Aucune donnée de tableau de bord disponible</p>
         </div>
       </div>
     );
@@ -49,21 +49,21 @@ const DashboardPage = () => {
 
   const stats = [
     {
-      label: "Total Documents",
+      label: "Documents au total",
       Value: dashboardData.overview.totalDocuments,
       icon: FileText,
       gradient: "from-blue-400 to-cyan-500",
       shadowColor: "shadow-blue-500/25",
     },
     {
-      label: "Total Flashcards",
+      label: "Fiches de révision au total",
       Value: dashboardData.overview.totalFlashcards,
       icon: BookOpen,
       gradient: "from-purple-400 to-pink-500",
       shadowColor: "shadow-purple-500/25",
     },
     {
-      label: "Total Quizzes",
+      label: "Quiz au total",
       Value: dashboardData.overview.totalQuizzes,
       icon: BrainCircuit,
       gradient: "from-emerald-400 to-teal-500",
@@ -75,17 +75,17 @@ const DashboardPage = () => {
     <div className="min-h-screen">
       <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] bg-size-[16px-16px] opacity-30 pointer-events-none " />
       <div className="relative max-w-7xl mx-auto">
-        {/* Header */}
+        {/* En-tête */}
         <div className="mb-6">
           <h1 className="text-2xl font-medium text-slate-900 tracking-tight mb-2 ">
-            Dashboard
+            Tableau de bord
           </h1>
           <p className="text-slate-500 text-sm">
-            Track your learning progress and activity
+            Suivez votre progression et votre activité d’apprentissage
           </p>
         </div>
 
-        {/* Stats Grid */}
+        {/* Grille des statistiques */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-5">
           {stats.map((stat, index) => (
             <div
@@ -109,14 +109,14 @@ const DashboardPage = () => {
           ))}
         </div>
 
-        {/* Recent Activity Section */}
+        {/* Section de l’activité récente */}
         <div className="bg-white backdrop-blur-xl border border-slate-200/60 rounded-2xl shadow-xl shadow-slate-200/50 p-8">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 rounded-xl bg-linear-to-br from-slate-100 to-slate-200 flex items-center justify-center">
               <Clock className="w-5 h-5 text-slate-600" strokeWidth={2} />
             </div>
             <h3 className="text-xl font-medium text-slate-900 tracking-tight">
-              Recent Activity
+              Activité récente
             </h3>
           </div>
 
@@ -155,8 +155,8 @@ const DashboardPage = () => {
                         />
                         <p className="text-sm font-medium text-slate-900 truncate">
                           {activity.type === "document"
-                            ? "Accessed Document: "
-                            : "Attempted Quiz: "}
+                            ? "Document consulté : "
+                            : "Quiz tenté : "}
                           <span className="text-slate-700">
                             {activity.description}
                           </span>
@@ -182,9 +182,9 @@ const DashboardPage = () => {
               <div className="inline-flex items-center justify-center w-16 rounded-2xl bg-slate-100 mb-4">
                 <Clock className="w-8 h-8 text-slate-400" />
               </div>
-              <p className="text-sm text-slate-600">No recent activity yet.</p>
+              <p className="text-sm text-slate-600">Aucune activité récente pour le moment.</p>
               <p className="text-xs text-slate-500 mt-1">
-                Start learning to see your progress here
+                Commencez à apprendre pour voir votre progression ici
               </p>
             </div>
           )}

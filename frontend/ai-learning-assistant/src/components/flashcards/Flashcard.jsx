@@ -1,7 +1,13 @@
 import { useState } from "react";
 import { Star, RotateCcw } from "lucide-react";
 
-const Flashcard = ({flashcard, onToggleStar}) => {
+const difficultyLabels = {
+  easy: "Facile",
+  medium: "Moyen",
+  hard: "Difficile",
+};
+
+const Flashcard = ({ flashcard, onToggleStar }) => {
   const [isFlipped, setIsFlipped] = useState(false);
 
   if (!flashcard) {
@@ -22,7 +28,7 @@ const Flashcard = ({flashcard, onToggleStar}) => {
         }}
         onClick={handleFlip}
       >
-        {/* Front of the card (Question) */}
+        {/* Recto de la carte (question) */}
         <div
           className="absolute inset-0 w-full h-full bg-white/80 backdrop-blur-xl border-2 border-slate-200/60 rounded-2xl shadow-xl shadow-slate-200/50 p-8 flex flex-col justify-between"
           style={{
@@ -30,10 +36,10 @@ const Flashcard = ({flashcard, onToggleStar}) => {
             WebkitBackfaceVisibility: "hidden",
           }}
         >
-          {/* Star Button */}
+          {/* Bouton de favori */}
           <div className="flex  items-start justify-between">
             <div className="bg-slate-100 text-[10px] text-slate-600 rounded px-4 py-1 uppercase">
-              {flashcard?.difficulty}
+              {difficultyLabels[flashcard?.difficulty] || "Niveau inconnu"}
             </div>
             <button
               onClick={(e) => {
@@ -54,21 +60,21 @@ const Flashcard = ({flashcard, onToggleStar}) => {
             </button>
           </div>
 
-          {/* Question Content */}
+          {/* Contenu de la question */}
           <div className="flex-1 flex items-center justify-center px-4 py-6">
             <p className="text-lg font-semibold text-slate-900 text-center leading-relaxed">
               {flashcard.question}
             </p>
           </div>
 
-          {/* Flip Indicator */}
+          {/* Indicateur de retournement */}
           <div className="flex items-center justify-center gap-2 text-xs text-slate-400 font-medium">
             <RotateCcw className="w-3.5 h-3.5" strokeWidth={2} />
-            <span>Click to reveal answer</span>
+            <span>Cliquez pour afficher la réponse</span>
           </div>
         </div>
 
-        {/* Back of the card (Answer) */}
+        {/* Verso de la carte (réponse) */}
         <div
           className="absolute inset-0 w-full h-full bg-linear-to-br from-emerald-500 to-teal-500 border-2 border-emerald-400/60 rounded-2xl shadow-xl shadow-emerald-500/30 p-8 flex flex-col justify-between"
           style={{
@@ -77,7 +83,7 @@ const Flashcard = ({flashcard, onToggleStar}) => {
             transform: "rotateY(180deg)",
           }}
         >
-          {/* Star Button */}
+          {/* Bouton de favori */}
           <div className="flex justify-end">
             <button
               onClick={(e) => {
@@ -98,17 +104,17 @@ const Flashcard = ({flashcard, onToggleStar}) => {
             </button>
           </div>
 
-          {/* Answer Content */}
+          {/* Contenu de la réponse */}
           <div className="flex-1 flex items-center justify-center px-4 py-6">
             <p className="text-base text-white text-center leading-relaxed font-medium">
               {flashcard.answer}
             </p>
           </div>
 
-          {/* Flip Indicator */}
+          {/* Indicateur de retournement */}
           <div className="flex items-center justify-center gap-2 text-xs text-white/70 font-medium">
             <RotateCcw className="w-3.5 h-3.5" strokeWidth={2} />
-            <span>Click to see question</span>
+            <span>Cliquez pour voir la question</span>
           </div>
         </div>
       </div>

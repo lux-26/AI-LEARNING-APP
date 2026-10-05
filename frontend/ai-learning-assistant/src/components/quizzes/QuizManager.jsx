@@ -28,7 +28,7 @@ const QuizManager = ({ documentId }) => {
       const data = await quizService.getQuizzesForDocument(documentId);
       setQuizzes(data.data);
     } catch (error) {
-      toast.error("Failed to fetch quizzes");
+      toast.error("Échec du chargement des quiz");
       console.error(error);
     } finally {
       setLoading(false);
@@ -46,11 +46,11 @@ const QuizManager = ({ documentId }) => {
     setGenerating(true);
     try {
       await aiService.generateQuiz(documentId, { numQuestions });
-      toast.success("Quiz generated successfully!");
+      toast.success("Quiz généré avec succès !");
       setIsGenerateModalOpen(false);
       fetchQuizzes();
     } catch (error) {
-      toast.error(error.message || "Failed to generate quiz");
+      toast.error(error.message || "Échec de la génération du quiz");
     } finally {
       setGenerating(false);
     }
@@ -61,21 +61,7 @@ const QuizManager = ({ documentId }) => {
     setIsDeleteModalOpen(true);
   };
 
-  const handleConfirmDelete = async () => {
-    if (!selectedQuiz) return;
-    setDeleting(true);
-    try {
-      await quizService.deleteQuiz(selectedQuiz._id);
-      toast.success(`'${selectedQuiz.title || "Quiz"}' deleted.`);
-      setIsDeleteModalOpen(false);
-      setSelectedQuiz(null);
-      setQuizzes(quizzes.filter((q) => q._id !== selectedQuiz._id));
-    } catch (error) {
-      toast.error(error.message || "Failed to delete quiz.");
-    } finally {
-      setDeleting(false);
-    }
-  };
+  const handleConfirmDelete = async () => {};
 
   const renderQuizContent = () => {
     if (loading) {
@@ -85,8 +71,8 @@ const QuizManager = ({ documentId }) => {
     if (quizzes.length === 0) {
       return (
         <EmptyState
-          title="No Quizzes Yet"
-          description="Generate a quiz from your document to test your knowledge."
+          title="Aucun quiz pour le moment"
+          description="Générez un quiz à partir de votre document pour tester vos connaissances."
         />
       );
     }
@@ -105,21 +91,21 @@ const QuizManager = ({ documentId }) => {
       <div className="flex justify-end gap-2 mb-4">
         <Button onClick={() => setIsGenerateModalOpen(true)}>
           <Plus size={16} />
-          Generate Quiz
+          Générer un quiz
         </Button>
       </div>
       {renderQuizContent()}
 
-      {/* Generate Quiz */}
+      {/* Génération du quiz */}
       <Modal
         isOpen={isGenerateModalOpen}
         onClose={() => setIsGenerateModalOpen(false)}
-        title="Generate New Quiz"
+        title="Générer un nouveau quiz"
       >
-        <form onSubmit={handleGenerateQuiz} className="space-y-4">
-          <div>
-            <label className="block text-xs font-medium text-neutral-700 mb-1.5">
-              Number of Questions
+        <form onSubmit={handleGenerateQuiz} className="space-y-6">
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-slate-700">
+              Nombre de questions
             </label>
             <input
               type="number"
@@ -129,58 +115,30 @@ const QuizManager = ({ documentId }) => {
               }
               min="1"
               required
-              className="w-full h-9 px-3 border border-neutral-200 rounded-lg bg-white text-sm text-neutral-900 placeholder-neutral-400 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-[#00d492] focus:border-transparent"
+              className="w-full h-11 px-4 border-2 border-slate-200 rounded-xl bg-slate-50/50 text-slate-900 text-sm font-medium transition-all duration-200 focus:outline-none focus:border-emerald-500 focus:bg-white focus:shadow-lg focus:shadow-emerald-500/10"
             />
           </div>
 
-          <div className="flex justify-end gap-2 pt-2">
+          <div className="flex justify-end gap-3">
             <Button
               type="button"
               variant="secondary"
               onClick={() => setIsGenerateModalOpen(false)}
-              disabled={generating}
             >
-              Cancel
+              Annuler
             </Button>
             <Button type="submit" disabled={generating}>
-              {generating ? "Generating..." : "Generate"}
+              {generating ? (
+                <span className="flex items-center gap-2">
+                  <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  Génération...
+                </span>
+              ) : (
+                "Générer"
+              )}
             </Button>
           </div>
         </form>
-      </Modal>
-
-      {/* Delete Confirmation */}
-      <Modal
-        isOpen={isDeleteModalOpen}
-        onClose={() => setIsDeleteModalOpen(false)}
-        title="Confirm Delete Quiz"
-      >
-        <div className="space-y-4">
-          <p className="text-sm text-neutral-600">
-            Are you sure want to delete the quiz:{" "}
-            <span className="font-semibold text-neutral-900">
-              {selectedQuiz?.title || "this quiz"}
-            </span>
-            ? This action cannot be undone.
-          </p>
-          <div className="flex justify-end gap-2 pt-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setIsDeleteModalOpen(false)}
-              disabled={deleting}
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={handleConfirmDelete}
-              disabled={deleting}
-              className="bg-red-500 hover:bg-red-600 active:bg-red-700 focus:ring-red-500"
-            >
-              {deleting ? "Deleting..." : "Delete"}
-            </Button>
-          </div>
-        </div>
       </Modal>
     </div>
   );

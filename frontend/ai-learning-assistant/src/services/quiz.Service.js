@@ -8,7 +8,7 @@ const getQuizzesForDocument = async (documentId) => {
     );
     return response.data;
   } catch (error) {
-    throw error.response?.data || { message: "Failed to fetch quizzes" };
+    throw error.response?.data || { message: "Échec du chargement des quiz" };
   }
 };
 
@@ -19,7 +19,7 @@ const getQuizById = async (quizId) => {
     );
     return response.data;
   } catch (error) {
-    throw error.response?.data || { message: "Failed to fetch quiz" };
+    throw error.response?.data || { message: "Échec du chargement du quiz" };
   }
 };
 
@@ -31,7 +31,7 @@ const submitQuiz = async (quizId, answers) => {
     );
     return response.data;
   } catch (error) {
-    throw error.response?.data || { message: "Failed to submit quiz" };
+    throw error.response?.data || { message: "Échec de l’envoi du quiz" };
   }
 };
 
@@ -42,7 +42,7 @@ const getQuizResults = async (quizId) => {
     );
     return response.data;
   } catch (error) {
-    throw error.response?.data || { message: "Failed to quiz results" };
+    throw error.response?.data || { message: "Échec du chargement des résultats du quiz" };
   }
 };
 
@@ -53,7 +53,7 @@ const deleteQuiz = async (quizId) => {
     );
     return response.data;
   } catch (error) {
-    throw error.response?.data || { message: "Failed to delete quiz " };
+    throw error.response?.data || { message: "Échec de la suppression du quiz" };
   }
 };
 

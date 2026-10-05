@@ -10,7 +10,7 @@ const axiosInstance = axios.create({
   },
 });
 
-// Request Interceptor
+// Intercepteur des requêtes
 axiosInstance.interceptors.request.use(
   (config) => {
     const accessToken = localStorage.getItem("token");
@@ -24,7 +24,7 @@ axiosInstance.interceptors.request.use(
   },
 );
 
-// Response Interceptor
+// Intercepteur des réponses
 axiosInstance.interceptors.response.use(
   (response) => {
     return response;
@@ -32,10 +32,10 @@ axiosInstance.interceptors.response.use(
   (error) => {
     if (error.response) {
       if (error.response.status === 500) {
-        console.error("Server error. Please try again later.");
+        console.error("Erreur serveur. Veuillez réessayer plus tard.");
       }
     } else if (error.code === "ECONNABORTED") {
-      console.error("Request timeout. Please try again.");
+      console.error("Délai d’attente dépassé. Veuillez réessayer.");
     }
     return Promise.reject(error);
   },

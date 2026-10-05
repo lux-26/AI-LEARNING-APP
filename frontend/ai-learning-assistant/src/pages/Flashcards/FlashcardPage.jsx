@@ -36,7 +36,7 @@ const FlashcardPage = () => {
       setFlashcardSets(response.date?.[0]);
       setFlashcards(response.date?.[0]?.cards || []);
     } catch (error) {
-      toast.error("Failed to fetch flashcards.");
+      toast.error("Échec du chargement des fiches.");
       console.error(error);
     } finally {
       setLoadind(false);
@@ -51,10 +51,10 @@ const FlashcardPage = () => {
     setGenerating(true);
     try {
       await aiService.generateFlashcards(documentId);
-      toast.success("Flashcards generated successfully!");
+      toast.success("Fiches générées avec succès !");
       fetchFlashcards();
     } catch (error) {
-      toast.error(error.message || "Failed to generate flashcards.");
+      toast.error(error.message || "Échec de la génération des fiches.");
     } finally {
       setGenerating(false);
     }
@@ -78,9 +78,9 @@ const FlashcardPage = () => {
 
     try {
       await flashcardService.reviewFlashcard(currentCard._id, index);
-      toast.success("Flashcard reviewed!");
+      toast.success("Fiche révisée !");
     } catch (error) {
-      toast.error("Failed  to review flashcard.");
+      toast.error("Échec de la révision de la fiche.");
     }
   };
 
@@ -93,9 +93,9 @@ const FlashcardPage = () => {
         ),
       );
 
-      toast.success("Flashcard starred status updated!");
+      toast.success("Statut du favori mis à jour !");
     } catch (error) {
-      toast.error("Failed to update star status.");
+      toast.error("Échec de la mise à jour du favori.");
     }
   };
 
@@ -103,11 +103,11 @@ const FlashcardPage = () => {
     setDeleting(true);
     try {
       await flashcardService.deleteFlashcardSet(flashcardSets._id);
-      toast.success("Flashcard set deleted successfully!");
+      toast.success("Ensemble de fiches supprimé avec succès !");
       setIsDeleteModalOpen(false);
-      fetchFlashcards(); //Refethc to show empty state
+      fetchFlashcards(); //Actualiser pour afficher l’état vide
     } catch (error) {
-      toast.error(error.message || "Failed to delete flashcard set.");
+      toast.error(error.message || "Échec de la suppression de l’ensemble de fiches.");
     } finally {
       setDeleting(false);
     }
@@ -121,8 +121,8 @@ const FlashcardPage = () => {
     if (flashcards.length === 0) {
       return (
         <EmptyState
-          title="No Flashcards Yet"
-          description="Generate flashcards from your document to start learning"
+          title="Aucune fiche pour le moment"
+          description="Générez des fiches à partir de votre document pour commencer à apprendre"
         />
       );
     }
@@ -140,7 +140,7 @@ const FlashcardPage = () => {
             variant="secondary"
             disabled={flashcards.length <= 1}
           >
-            <ChevronLeft size={16} /> Previous
+            <ChevronLeft size={16} /> Précédent
           </Button>
           <span className="text-sm text-neutral-600">
             {currentCardIndex + 1} / {flashcards.length}
@@ -150,7 +150,7 @@ const FlashcardPage = () => {
             variant="secondary"
             disabled={flashcards.length <= 1}
           >
-            Next <ChevronRight size={16} />
+            Suivant <ChevronRight size={16} />
           </Button>
         </div>
       </div>
@@ -164,10 +164,10 @@ const FlashcardPage = () => {
           className="inline-flex items-center gap-2 text-sm text-neutral-600 hover:text-neutral-900 transition-colors"
         >
           <ArrowLeft scale={16} />
-          Back to Document
+          Retour au document
         </Link>
       </div>
-      <PageHeader title="Flashcards">
+      <PageHeader title="Fiches de révision">
         <div className="flex gap-2">
           {!loading &&
             (flashcards.length > 0 ? (
@@ -176,7 +176,7 @@ const FlashcardPage = () => {
                   onClick={() => setIsDeleteModalOpen(true)}
                   disabled={deleting}
                 >
-                  <Trash2 size={16} /> Delete Set
+                  <Trash2 size={16} /> Supprimer l’ensemble
                 </Button>
               </>
             ) : (
@@ -186,7 +186,7 @@ const FlashcardPage = () => {
                 ) : (
                   <>
                     <Plus size={16} />
-                    Generate Flashcard
+                    Générer des fiches
                   </>
                 )}
               </Button>
@@ -198,12 +198,12 @@ const FlashcardPage = () => {
       <Modal
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
-        title="Confirm Delete Flashcard Set"
+        title="Confirmer la suppression de l’ensemble de fiches"
       >
         <div className="spacy-y-4">
           <p className="text-sm text-neutral-600">
-            Are you sure want to delete all flashcards for this document? This
-            action cannot be undone
+            Voulez-vous vraiment supprimer toutes les fiches de ce document ?
+            Cette action est irréversible.
           </p>
           <div className="flex justify-end gap-2 pt-2">
             <Button
@@ -212,13 +212,15 @@ const FlashcardPage = () => {
               onClick={() => setIsDeleteModalOpen(false)}
               disabled={deleting}
             >
-              Cancel
+              Annuler
             </Button>
             <Button
               onClick={handleDeleteFlashcardSet}
               disabled={deleting}
               className="bg-red-500 hover:bg-red-600 active:bg-red-700 focus:ring-red-500"
-            ></Button>
+            >
+              Supprimer
+            </Button>
           </div>
         </div>
       </Modal>

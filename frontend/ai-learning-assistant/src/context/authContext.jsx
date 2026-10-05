@@ -30,7 +30,7 @@ export const AuthProvider = ({ children }) => {
         setIsAuthenticated(true);
       }
     } catch (error) {
-      console.error("Auth check failed:", error);
+      console.error("Échec de la vérification de l’authentification :", error);
       logout();
     } finally {
       setLoading(false);

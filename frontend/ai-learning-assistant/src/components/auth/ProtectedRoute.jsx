@@ -3,10 +3,10 @@ import AppLayout from "../layout/AppLayout.jsx";
 import { useAuth } from "../../context/authContext";
 
 const ProtectedRoute = () => {
-  const { isAuthenticated, loadind } = useAuth;
+  const { isAuthenticated, loading } = useAuth();
 
-  if (loadind) {
-    return <div className="">Loading...</div>;
+  if (loading) {
+    return <div className="">Chargement...</div>;
   }
   return isAuthenticated ? (
     <AppLayout>

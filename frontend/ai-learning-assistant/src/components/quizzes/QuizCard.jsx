@@ -2,6 +2,9 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { Play, BarChart2, Trash2, Award } from "lucide-react";
 import moment from "moment";
+import "moment/locale/fr";
+
+moment.locale("fr");
 
 const QuizCard = ({ quiz, onDelete }) => {
   return (
@@ -17,12 +20,12 @@ const QuizCard = ({ quiz, onDelete }) => {
       </button>
 
       <div className="space-y-4">
-        {/* Status Badge */}
+        {/* Badge de statut */}
 
         <div className="inline-flex items-center gap-1.5 py-1 rounded-lg font-semibold">
           <div className="flex items-center gap-1.5 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-1">
             <Award className="w-3.5 h-3.5 text-emerald-600" strokeWidth={2.5} />
-            <span className="text-emerald-700">Score: {quiz?.score}</span>
+            <span className="text-emerald-700">Score : {quiz?.score}</span>
           </div>
         </div>
 
@@ -35,11 +38,11 @@ const QuizCard = ({ quiz, onDelete }) => {
               `Quiz - ${moment(quiz.createdAt).format("MMM D, YYYY")}`}
           </h3>
           <p className="text-sm font-medium uppercase text-slate-500 tracking-wide">
-            Created {moment(quiz.createdAt).format("MMM D, YYYY")}
+            Créé le {moment(quiz.createdAt).format("MMM D, YYYY")}
           </p>
         </div>
 
-        {/* Quiz Info */}
+        {/* Informations du quiz */}
         <div className="flex items-center gap-3 pt-2 border-t border-slate-100">
           <div className="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg">
             <span className="text-sm font-semibold text-slate-700">
@@ -50,13 +53,13 @@ const QuizCard = ({ quiz, onDelete }) => {
         </div>
       </div>
 
-      {/* Action Button */}
+      {/* Bouton d’action */}
       <div className="mt-2 pt-4 border-t border-slate-100">
         {quiz?.userAnswers?.length > 0 ? (
           <Link to={`/quizzes/${quiz._id}/results`}>
             <button className="group/btn w-full inline-flex items-center justify-center gap-2 h-11 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-sm rounded-xl transition-all duration-200 active:scale-95 cursor-pointer">
               <BarChart2 className="w-4 h-4" strokeWidth={2.5} />
-              View Results
+              Voir les résultats
             </button>
           </Link>
         ) : (
@@ -64,7 +67,7 @@ const QuizCard = ({ quiz, onDelete }) => {
             <button className="group/btn relative w-full h-11 bg-linear-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-semibold text-sm rounded-xl transition-all duration-200 shadow-lg shadow-emerald-500/25 active:scale-95 overflow-hidden">
               <span className="relative z-10 flex items-center justify-center gap-2">
                 <Play className="w-4 h-4" strokeWidth={2.5} />
-                Start Quiz
+                Commencer le quiz
                 </span>
                 <div className="absolute inset-0 bg-linear-to-r from-white/0 via-white/20 to-white/0 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700"/>
             </button>

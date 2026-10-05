@@ -11,6 +11,9 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 import moment from "moment";
+import "moment/locale/fr";
+
+moment.locale("fr");
 
 import FlashcardService from "../../services/flashcard.Service.js";
 import aiService from "../../services/ai.Service.js";
@@ -35,7 +38,7 @@ const FlashcardManager = ({ documentId }) => {
         await flashcardService.getFlashcardsForDocument(documentId);
       setFlashcardSets(response.date);
     } catch (error) {
-      toast.error("Failed to fetch flashcard sets.");
+      toast.error("Échec du chargement des ensembles de fiches.");
       console.error(error);
     } finally {
       setLoading(false);
@@ -52,10 +55,10 @@ const FlashcardManager = ({ documentId }) => {
     setGenerating(true);
     try {
       await aiService.generateFlashcards(documentId);
-      toast.success("Flashcards generated successfully!");
+      toast.success("Fiches générées avec succès !");
       fetchFlashcardSets();
     } catch (error) {
-      toast.error(error.message || "Failed to generate flashcards.");
+      toast.error(error.message || "Échec de la génération des fiches.");
     } finally {
       setGenerating(false);
     }
@@ -85,9 +88,9 @@ const FlashcardManager = ({ documentId }) => {
 
     try {
       await flashcardService.reviewFlashcard(currentCard._id, index);
-      toast.success("Flashcard reviewed!");
+      toast.success("Fiche révisée !");
     } catch (error) {
-      toast.error("Failed to review flashcard.");
+      toast.error("Échec de la révision de la fiche.");
     }
   };
 
@@ -107,9 +110,9 @@ const FlashcardManager = ({ documentId }) => {
       });
       setFlashcardSets(updatedSets);
       setSelectedSet(updatedSets.find((set) => set._id === selectedSet._id));
-      toast.success("Flashcard starred status updated!");
+      toast.success("Statut du favori mis à jour !");
     } catch (error) {
-      toast.error("Failed to updated star status.");
+      toast.error("Échec de la mise à jour du favori.");
     }
   };
 
@@ -124,12 +127,12 @@ const FlashcardManager = ({ documentId }) => {
     setDeleting(true);
     try {
       await flashcardService.deleteFlashcardSet(setToDelete._id);
-      toast.success("Flashcard set deleted successfully!");
+      toast.success("Ensemble de fiches supprimé avec succès !");
       setIsDeleteModalOpen(false);
       setSetToDelete;
       fetchFlashcardSets();
     } catch (error) {
-      toast.error(error.message || "Failed to delete flashcard set.");
+      toast.error(error.message || "Échec de la suppression de l’ensemble de fiches.");
     } finally {
       setDeleting(false);
     }
@@ -144,7 +147,7 @@ const FlashcardManager = ({ documentId }) => {
     const currentCard = selectedSet.cards[currentCardIndex];
     return (
       <div className="space-y-8">
-        {/* Back Button */}
+        {/* Bouton de retour */}
         <button
           onClick={() => setSelectedSet(null)}
           className="group inline-flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-emerald-600 transition-colors duration-200"
@@ -153,10 +156,10 @@ const FlashcardManager = ({ documentId }) => {
             className="w-4 h-4 group-hover:-translate-x-1 transition-transform duration-200"
             strokeWidth={2}
           />
-          Back to Sets
+          Retour aux séries
         </button>
 
-        {/* Flashcard Display */}
+        {/* Affichage des fiches */}
         <div className="flex flex-col items-center space-y-8">
           <div className="w-full max-w-2xl">
             <Flashcard
@@ -165,7 +168,7 @@ const FlashcardManager = ({ documentId }) => {
             />
           </div>
 
-          {/* Navigation Controls */}
+          {/* Contrôles de navigation */}
           <div className="flex items-center gap-6">
             <button
               onClick={handlePrevCard}
@@ -191,7 +194,7 @@ const FlashcardManager = ({ documentId }) => {
               disabled={selectedSet.cards.length <= 1}
               className="group flex items-center gap-2 px-5 h-11 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium text-sm rounded-xl transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-slate-100"
             >
-              Next
+              Suivant
               <ChevronRight
                 className="w-4  h-4 group-hover:translate-x-0.5 transition-transform duration-200"
                 strokeWidth={2.5}
@@ -219,11 +222,11 @@ const FlashcardManager = ({ documentId }) => {
             <Brain className="w-8 h-8 text-emerald-600" strokeWidth={2} />
           </div>
           <h3 className="text-xl font-semibold text-slate-900 mb-2">
-            No Flashcards Yet
+            Aucune fiche pour le moment
           </h3>
           <p className="text-sm text-slate-500 mb-8 text-center max-w-sm">
-            Generate flashcards from your document to start learning and
-            reinforce your knowledge.
+            Générez des fiches à partir de votre document pour commencer à
+            apprendre et renforcer vos connaissances.
           </p>
           <button
             onClick={handleGenerateFlashcards}
@@ -233,12 +236,12 @@ const FlashcardManager = ({ documentId }) => {
             {generating ? (
               <>
                 <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                Generating...
+                Génération...
               </>
             ) : (
               <>
                 <Sparkles className="w-4 h-4" strokeWidth={2} />
-                Generate Flashcards
+                Générer des fiches
               </>
             )}
           </button>
@@ -248,15 +251,17 @@ const FlashcardManager = ({ documentId }) => {
 
     return (
       <div className="space-y-6">
-        {/* header with Generate Button */}
+        {/* En-tête avec bouton de génération */}
         <div className="flex items-center justify-between">
           <div>
             <h3 className="text-lg font-semibold text-slate-900">
-              Your Flashcard Sets
+              Vos ensembles de fiches
             </h3>
             <p className="text-sm text-slate-500 mt-1">
-              {flashcardSets.length}
-              {flashcardSets.length === 1 ? "set" : "sets"} available
+              {flashcardSets.length}{" "}
+              {flashcardSets.length === 1
+                ? "série disponible"
+                : "séries disponibles"}
             </p>
           </div>
 
@@ -273,13 +278,13 @@ const FlashcardManager = ({ documentId }) => {
             ) : (
               <>
                 <Plus className="w-4 h-4" strokeWidth={2.5} />
-                Generate New Set
+                Générer un nouvel ensemble
               </>
             )}
           </button>
         </div>
 
-        {/* Flashcard Sets Grid */}
+        {/* Grille des ensembles de fiches */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {flashcardSets.map((set) => (
             <div
@@ -287,7 +292,7 @@ const FlashcardManager = ({ documentId }) => {
               className="group relative bg-white/80 backdrop-blur-xl border-2 border-slate-200 hover:border-emerald-300 rounded-2xl p-6 cursor-pointer transition-all duration-200 hover:shadow-lg hover:shadow-emerald-500/10"
               onClick={() => handleSelectSet(set)}
             >
-              {/* Delete Button */}
+              {/* Bouton de suppression */}
               <button
                 onClick={(e) => handleDeleteRequest(e, set)}
                 className="absolute top-4 right-4 p-2 text-slate-400 hover:text-rose-500 hover:bg-rose-50 rounded-lg transition-all duration-200 opacity-0 group-hover:opacity-100"
@@ -295,7 +300,7 @@ const FlashcardManager = ({ documentId }) => {
                 <Trash2 className="w-4 h-4" strokeWidth={2} />
               </button>
 
-              {/* Set Content */}
+              {/* Contenu de l’ensemble */}
 
               <div className="space-y-4">
                 <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-linear-to-br from-emerald-100 to-teal-100">
@@ -304,10 +309,10 @@ const FlashcardManager = ({ documentId }) => {
 
                 <div>
                   <h4 className="text-base font-semibold text-slate-900 mb-1">
-                    Flashcard Set
+                    Ensemble de fiches
                   </h4>
                   <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">
-                    Created {moment(set.createdAt).format("MMM D, YYYY")}{" "}
+                    Créé le {moment(set.createdAt).format("MMM D, YYYY")}{" "}
                   </p>
                 </div>
                 <div className="flex items-center gap-2 pt-2 border-t border-slate-100">
@@ -332,16 +337,17 @@ const FlashcardManager = ({ documentId }) => {
         {selectedSet ? renderFlashcardViewer() : renderSetList()}
       </div>
 
-      {/* Delete Confirmation Modal */}
+      {/* Modale de confirmation de suppression */}
       <Modal
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
-        title="Delete Flashcard Set?"
+        title="Supprimer l’ensemble de fiches ?"
       >
         <div className="space-y-6">
           <p className="text-sm text-slate-600">
-            Are you sure want to delete this flashcard set? This action cannot
-            be undone and all cards will be permanently removed.
+            Voulez-vous vraiment supprimer cet ensemble de fiches ? Cette
+            action est irréversible et toutes les cartes seront définitivement
+            supprimées.
           </p>
           <div className="flex items-center justify-end gap-3 pt-2">
             <button
@@ -350,7 +356,7 @@ const FlashcardManager = ({ documentId }) => {
               disabled={deleting}
               className="px-5 h-11 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium text-sm rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Cancel
+              Annuler
             </button>
             <button
               onClick={handleConfirmDelete}
@@ -360,10 +366,10 @@ const FlashcardManager = ({ documentId }) => {
               {deleting ? (
                 <span className="flex items-center gap-2">
                   <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  Deleting...
+                  Suppression...
                 </span>
               ) : (
-                "Delete Set"
+                "Supprimer l’ensemble"
               )}
             </button>
           </div>

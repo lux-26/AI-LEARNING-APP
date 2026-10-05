@@ -9,7 +9,7 @@ const generateFlashcards = async (documentId, options) => {
     );
     return response.data;
   } catch (error) {
-    throw error.response?.data || { message: "Failed to generate flashcards" };
+    throw error.response?.data || { message: "Échec de la génération des fiches" };
   }
 };
 
@@ -21,7 +21,7 @@ const generateQuiz = async (documentId, options) => {
     });
     return response.data;
   } catch (error) {
-    throw error.response?.data || { message: "Failed to generate quiz" };
+    throw error.response?.data || { message: "Échec de la génération du quiz" };
   }
 };
 
@@ -32,7 +32,7 @@ const generateSummary = async (documentId) => {
     });
     return response.data?.data;
   } catch (error) {
-    throw error.response?.data || { message: "Failed to generate summary" };
+    throw error.response?.data || { message: "Échec de la génération du résumé" };
   }
 };
 
@@ -41,10 +41,10 @@ const chat = async (documentId, message) => {
     const response = await axiosInstance.post(API_PATHS.AI.CHAT, {
       documentId,
       question: message,
-    }); // Removed history from payload
+    }); // Historique retiré de la charge utile
     return response.data;
   } catch (error) {
-    throw error.response?.data || { message: "Chat request failed" };
+    throw error.response?.data || { message: "Échec de la demande de discussion" };
   }
 };
 
@@ -56,7 +56,7 @@ const explainConcept = async (documentId, concept) => {
     });
     return response.data?.data;
   } catch (error) {
-    throw error.response?.data || { message: "Failed to explain concept" };
+    throw error.response?.data || { message: "Échec de l’explication du concept" };
   }
 };
 
@@ -67,7 +67,7 @@ const getChatHistory = async (documentId) => {
     );
     return response.data;
   } catch (error) {
-    throw error.response?.data || { message: "Failed to fetch chat history" };
+    throw error.response?.data || { message: "Échec du chargement de l’historique de discussion" };
   }
 };
 

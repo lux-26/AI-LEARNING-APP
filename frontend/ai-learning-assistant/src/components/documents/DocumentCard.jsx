@@ -2,8 +2,11 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { FileText, Trash2, BookOpen, BrainCircuit, Clock } from "lucide-react";
 import moment from "moment";
+import "moment/locale/fr";
 
-// Helper function to format file size
+moment.locale("fr");
+
+// Fonction utilitaire pour formater la taille du fichier
 const formatFileSize = (bytes) => {
   if (bytes === undefined || bytes === null) return "N/A";
 
@@ -35,7 +38,7 @@ const DocumentCard = ({ document, onDelete }) => {
       className="group relative bg-white/80 backdrop-blur-xl border border-slate-200/60 rounded-2xl p-5 hover:border-slate-300/60 hover:shadow-xl hover:shadow-slate-200/50 transition-all duration-300 flex flex-col justify-between cursor-pointer hover:translate-y-1"
       onClick={handleNavigate}
     >
-      {/* Header Section */}
+      {/* Section d’en-tête */}
       <div>
         <div className="flex items-start justify-between gap-3 mb-4">
           <div className="shrink-0 w-12 h-12 bg-linear-to-br from-emerald-500 to-cyan-500 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/25 group-hover:scale-110 transition-transfom duration-300">
@@ -49,7 +52,7 @@ const DocumentCard = ({ document, onDelete }) => {
           </button>
         </div>
 
-        {/* Title */}
+        {/* Titre */}
         <h3
           className="text-base font-semibold text-slate-900 truncate mb-2"
           title={document.title}
@@ -57,7 +60,7 @@ const DocumentCard = ({ document, onDelete }) => {
           {document.title}
         </h3>
 
-        {/* Document info */}
+        {/* Informations du document */}
         <div className="flex items-center gap-3 text-xs text-slate-500 mb-3">
           {document.fileSize !== undefined && (
             <>
@@ -66,7 +69,7 @@ const DocumentCard = ({ document, onDelete }) => {
           )}
         </div>
 
-        {/* Stats Section */}
+        {/* Section des statistiques */}
         <div className="flex items-center gap-3">
           {document.flashcardCount !== undefined && (
             <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-purple-50 rounded-lg">
@@ -83,7 +86,7 @@ const DocumentCard = ({ document, onDelete }) => {
         </div>
       </div>
 
-      {/* Footer Section */}
+      {/* Section de pied de page */}
       <div className="mt-5 pt-4 border-t border-slate-100">
         <div className="flex items-center gap-1.5 text-xs text-slate-500">
           <Clock className="w-3.5 h-3.5" strokeWidth={2} />
@@ -91,7 +94,7 @@ const DocumentCard = ({ document, onDelete }) => {
         </div>
       </div>
 
-      {/* Hover Indicator */}
+      {/* Indicateur au survol */}
       <div className="absolute inset-0 rounded-2xl bg-linear-to-br from-emerald-500/0 to-teal-500/0 group-hover:from-emerald-500/5 group group-hover:to-teal-500/5 transition-all duration-300 pointer-events-none" />
     </div>
   );

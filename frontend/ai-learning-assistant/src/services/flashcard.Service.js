@@ -8,7 +8,7 @@ const getAllFlashcardSets = async () => {
     );
     return response.data;
   } catch (error) {
-    throw error.response?.data || { message: "Failed to fetch flashcard sets" };
+    throw error.response?.data || { message: "Échec du chargement des ensembles de fiches" };
   }
 };
 
@@ -19,7 +19,7 @@ const getFlashcardsForDocument = async (documentId) => {
     );
     return response.data;
   } catch (error) {
-    throw error.response?.data || { message: "Failed to fetch flashcard" };
+    throw error.response?.data || { message: "Échec du chargement de la fiche" };
   }
 };
 
@@ -31,7 +31,7 @@ const reviewFlashcard = async (cardId, cardIndex) => {
     );
     return response.data;
   } catch (error) {
-    throw error.response?.data || { message: "Failed to review flashcard" };
+    throw error.response?.data || { message: "Échec de la révision de la fiche" };
   }
 };
 
@@ -42,7 +42,7 @@ const toggleStar = async (cardId) => {
     );
     return response.data;
   } catch (error) {
-    throw error.response?.data || { message: "Failed to star flashcard" };
+    throw error.response?.data || { message: "Échec de l’ajout de la fiche aux favoris" };
   }
 };
 
@@ -53,7 +53,7 @@ const deleteFlashcardSet = async (id) => {
     );
     return response.data;
   } catch (error) {
-    throw error.response?.data || { message: "Failed to delete flashcard" };
+    throw error.response?.data || { message: "Échec de la suppression de la fiche" };
   }
 };
 
