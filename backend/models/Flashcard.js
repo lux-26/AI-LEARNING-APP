@@ -28,6 +28,10 @@ const flashcardSchema = new mongoose.Schema(
           type: Date,
           default: null,
         },
+        nextReviewDate: {
+          type: Date,
+          default: Date.now,
+        },
         reviewCount: {
           type: Number,
           default: 0,

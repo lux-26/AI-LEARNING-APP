@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   Plus,
   ChevronLeft,
@@ -7,17 +7,17 @@ import {
   ArrowLeft,
   Sparkles,
   Brain,
-  FastForward,
+  Download,
 } from "lucide-react";
 import toast from "react-hot-toast";
 import moment from "moment";
 
-import FlashcardService from "../../services/flashcard.Service.js";
 import aiService from "../../services/ai.Service.js";
 import Spinner from "../common/Spinner.jsx";
 import ConfirmDeleteModal from "../common/ConfirmDeleteModal.jsx";
 import Flashcard from "./Flashcard.jsx";
 import flashcardService from "../../services/flashcard.Service.js";
+import { exportFlashcardsPdf } from "../../utils/pdfExport.js";
 const FlashcardManager = ({ documentId }) => {
   const [flashcardSets, setFlashcardSets] = useState([]);
   const [selectedSet, setSelectedSet] = useState(null);
@@ -28,7 +28,7 @@ const FlashcardManager = ({ documentId }) => {
   const [deleting, setDeleting] = useState(false);
   const [setToDelete, setSetToDelete] = useState(null);
 
-  const fetchFlashcardSets = async () => {
+  const fetchFlashcardSets = useCallback(async () => {
     setLoading(true);
     try {
       const response =
@@ -40,13 +40,13 @@ const FlashcardManager = ({ documentId }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [documentId]);
 
   useEffect(() => {
     if (documentId) {
-      fetchFlashcardSets();
+      void Promise.resolve().then(fetchFlashcardSets);
     }
-  }, [documentId]);
+  }, [documentId, fetchFlashcardSets]);
 
   const handleGenerateFlashcards = async () => {
     setGenerating(true);
@@ -63,7 +63,6 @@ const FlashcardManager = ({ documentId }) => {
 
   const handleNextCard = () => {
     if (selectedSet) {
-      handleReview(currentCardIndex);
       setCurrentCardIndex(
         (prevIndex) => (prevIndex + 1) % selectedSet.cards.length,
       );
@@ -72,21 +71,41 @@ const FlashcardManager = ({ documentId }) => {
 
   const handlePrevCard = () => {
     if (selectedSet) {
-      handleReview(currentCardIndex);
       setCurrentCardIndex(
         (prevIndex) =>
           (prevIndex - 1 + selectedSet.cards.length) % selectedSet.cards.length,
       );
     }
   };
-  const handleReview = async (index) => {
+  const handleReview = async (difficulty) => {
     const currentCard = selectedSet?.cards[currentCardIndex];
     if (!currentCard) return;
 
     try {
-      await flashcardService.reviewFlashcard(currentCard._id, index);
+      await flashcardService.reviewFlashcard(currentCard._id, difficulty);
+      const nextReviewDate = new Date();
+      nextReviewDate.setDate(
+        nextReviewDate.getDate() +
+          { hard: 1, medium: 3, easy: 7 }[difficulty],
+      );
+      const updatedCards = selectedSet.cards.map((card, index) =>
+        index === currentCardIndex
+          ? {
+              ...card,
+              difficulty,
+              lastReviewed: new Date().toISOString(),
+              nextReviewDate: nextReviewDate.toISOString(),
+              reviewCount: (card.reviewCount || 0) + 1,
+            }
+          : card,
+      );
+      const updatedSet = { ...selectedSet, cards: updatedCards };
+      setSelectedSet(updatedSet);
+      setFlashcardSets((sets) =>
+        sets.map((set) => (set._id === updatedSet._id ? updatedSet : set)),
+      );
       toast.success("Fiche révisée !");
-    } catch (error) {
+    } catch {
       toast.error("Échec de la révision de la fiche.");
     }
   };
@@ -108,7 +127,7 @@ const FlashcardManager = ({ documentId }) => {
       setFlashcardSets(updatedSets);
       setSelectedSet(updatedSets.find((set) => set._id === selectedSet._id));
       toast.success("État favori de la fiche mis à jour !");
-    } catch (error) {
+    } catch {
       toast.error("Échec de la mise à jour du favori.");
     }
   };
@@ -155,6 +174,19 @@ const FlashcardManager = ({ documentId }) => {
           />
           Retour aux ensembles
         </button>
+        <button
+          type="button"
+          onClick={() =>
+            exportFlashcardsPdf({
+              title: "Flashcards",
+              cards: selectedSet.cards,
+            })
+          }
+          className="inline-flex shrink-0 h-11 items-center justify-center gap-2 px-5 bg-linear-to-r from-emerald-600 to-emerald-500 hover:from-emerald-600 hover:to-emerald-600 text-white text-sm font-semibold rounded-xl transition-all duration-200 shadow-lg shadow-purple-500/25 active:scale-95"
+        >
+          <Download className="w-4 h-4" strokeWidth={2} />
+          Exporter PDF
+        </button>
 
         {/* Flashcard Display */}
         <div className="flex flex-col items-center space-y-8">
@@ -184,6 +216,22 @@ const FlashcardManager = ({ documentId }) => {
                 <span className="text-slate-400 font-normal">/</span>{" "}
                 {selectedSet.cards.length}
               </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-slate-500">Difficulté :</span>
+              {[
+                ["hard", "Difficile"],
+                ["medium", "Moyen"],
+                ["easy", "Facile"],
+              ].map(([difficulty, label]) => (
+                <button
+                  key={difficulty}
+                  onClick={() => handleReview(difficulty)}
+                  className="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg transition-all duration-200"
+                >
+                  {label}
+                </button>
+              ))}
             </div>
 
             <button

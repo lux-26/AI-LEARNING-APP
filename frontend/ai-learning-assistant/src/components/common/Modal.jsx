@@ -1,7 +1,6 @@
-import React from "react";
 import { X } from "lucide-react";
 
-const Modal = ({ isOpen, onClose, title, children }) => {
+const Modal = ({ isOpen, onClose, title, headerActions, children }) => {
   if (!isOpen) return null;
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
@@ -17,10 +16,15 @@ const Modal = ({ isOpen, onClose, title, children }) => {
           >
             <X className="w-5 h-5" strokeWidth={2} />
           </button>
-          <div className="mb-6 pr-8">
+          <div className="mb-6 flex items-center justify-between gap-4 pr-8">
             <h3 className="text-xl font-medium text-slate-900 tracking-tight">
               {title}
             </h3>
+            {headerActions && (
+              <div className="flex min-w-0 items-center gap-2">
+                {headerActions}
+              </div>
+            )}
           </div>
           <div>{children}</div>
         </div>

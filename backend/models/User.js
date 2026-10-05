@@ -28,6 +28,24 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: null, // Valeur nulle par défaut si l'utilisateur n'a pas de photo de profil
     },
+    streakCount: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+    lastActiveDate: {
+      type: Date,
+      default: null,
+    },
+    badges: {
+      type: [String],
+      default: [],
+    },
+    dailyGoal: {
+      type: Number,
+      default: 1,
+      min: 1,
+    },
   },
   {
     timestamps: true, // Ajoute automatiquement les champs createdAt et updatedAt

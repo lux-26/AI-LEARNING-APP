@@ -1,6 +1,8 @@
 import Document from "../models/Document.js";
 import Flashcard from "../models/Flashcard.js";
 import Quiz from "../models/Quiz.js";
+import StudyProgress from "../models/StudyProgress.js";
+import User from "../models/User.js";
 
 // @desc       Récupérer les statistiques d’apprentissage de l’utilisateur
 // @route      GET /api/progress/dashboard
@@ -8,6 +10,9 @@ import Quiz from "../models/Quiz.js";
 export const getDashboard = async (req, res, next) => {
   try {
     const userId = req.user._id;
+    const user = await User.findById(userId).select(
+      "streakCount badges dailyGoal",
+    );
 
     // Récupérer les compteurs
     const totalDocuments = await Document.countDocuments({ userId });
@@ -22,11 +27,21 @@ export const getDashboard = async (req, res, next) => {
     const flashcardSets = await Flashcard.find({ userId });
     let totalFlashcards = 0;
     let reviewedFlashcards = 0;
+    let masteredFlashcards = 0;
+    let cardsToReviewToday = 0;
     let starredFlashcards = 0;
+    const today = new Date();
+    today.setHours(23, 59, 59, 999);
 
     flashcardSets.forEach((set) => {
       totalFlashcards += set.cards.length;
       reviewedFlashcards += set.cards.filter((c) => c.reviewCount > 0).length;
+      masteredFlashcards += set.cards.filter(
+        (c) => c.reviewCount >= 3 && c.difficulty === "easy",
+      ).length;
+      cardsToReviewToday += set.cards.filter(
+        (c) => !c.nextReviewDate || c.nextReviewDate <= today,
+      ).length;
       starredFlashcards += set.cards.filter((c) => c.isStarred).length;
     });
 
@@ -51,8 +66,9 @@ export const getDashboard = async (req, res, next) => {
       .populate("documentId", "title")
       .select("title score totalQuestions completedAt createdAt");
 
-    // Série d’étude (simplifiée ; en production, suivre l’activité quotidienne)
-    const studyStreak = Math.floor(Math.random() * 7) + 1; // Données simulées
+    const progress = await StudyProgress.find({ userId })
+      .populate("documentId", "title")
+      .sort({ updatedAt: -1 });
 
     res.status(200).json({
       success: true,
@@ -66,8 +82,13 @@ export const getDashboard = async (req, res, next) => {
           totalQuizzes,
           completedQuizzes,
           averageScore,
-          studyStreak,
+          studyStreak: user?.streakCount || 0,
+          badges: user?.badges || [],
+          dailyGoal: user?.dailyGoal || 1,
+          masteredFlashcards,
+          cardsToReviewToday,
         },
+        progress,
         recentActivity: {
           documents: recentDocuments,
           quizzes: recentQuizzes,

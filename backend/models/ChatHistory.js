@@ -36,6 +36,10 @@ const chatHistorySchema = new mongoose.Schema(
           type: [Number],
           default: [],
         },
+        relevantPages: {
+          type: [Number],
+          default: [],
+        },
       },
     ],
   },

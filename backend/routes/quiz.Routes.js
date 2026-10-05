@@ -1,6 +1,7 @@
 import express from "express";
 import {
   getQuizzes,
+  getAllQuizzes,
   getQuizById,
   submitQuiz,
   getQuizResults,
@@ -13,8 +14,9 @@ const router = express.Router();
 // Toutes les routes sont protégées
 router.use(protect);
 
-router.get("/:documentId", getQuizzes);
+router.get("/", getAllQuizzes);
 router.get("/quiz/:id", getQuizById);
+router.get("/:documentId", getQuizzes);
 router.post("/:id/submit", submitQuiz);
 router.get("/:id/results", getQuizResults);
 router.delete("/:id", deleteQuiz);

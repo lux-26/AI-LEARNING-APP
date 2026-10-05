@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import quizService from "../../services/quiz.Service.js";
 import PageHeader from "../../components/common/PageHeader.jsx";
@@ -10,8 +10,10 @@ import {
   Trophy,
   Target,
   BookOpen,
+  Download,
 } from "lucide-react";
 import toast from "react-hot-toast";
+import { exportQuizResultsPdf } from "../../utils/pdfExport.js";
 
 const QuizResultPage = () => {
   const { quizId } = useParams();
@@ -90,6 +92,22 @@ const QuizResultPage = () => {
       </div>
 
       <PageHeader title={`${quiz.title || "Quiz"} — Résultats`} />
+      <div className="flex justify-end mb-4">
+        <button
+          type="button"
+          onClick={() =>
+            exportQuizResultsPdf({
+              title: quiz.title,
+              score,
+              results: detailedResults,
+            })
+          }
+          className="inline-flex shrink-0 h-11 items-center justify-center gap-2 px-5 bg-linear-to-r from-emerald-600 to-emerald-500 hover:from-emerald-600 hover:to-emerald-600 text-white text-sm font-semibold rounded-xl transition-all duration-200 shadow-lg shadow-purple-500/25 active:scale-95"
+        >
+          <Download className="w-4 h-4" strokeWidth={2} />
+          Exporter PDF
+        </button>
+      </div>
 
       {/* Score */}
       <div className="bg-white/80 backdrop-blur-xl border-2 border-slate-200 rounded-2xl shadow-xl shadow-slate-200/50 p-8 mb-8">
@@ -171,7 +189,7 @@ const QuizResultPage = () => {
                       Question {index + 1}
                     </span>
                   </div>
-                  <h4 className="text-base font-semibold text-shadow-slate-900 leading-relaxed">
+                  <h4 className="text-base font-semibold text-slate-900 leading-relaxed">
                     {result.question}
                   </h4>
                 </div>

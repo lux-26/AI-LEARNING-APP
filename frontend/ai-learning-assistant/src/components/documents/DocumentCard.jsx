@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { FileText, Trash2, BookOpen, BrainCircuit, Clock } from "lucide-react";
+import { FileText, Trash2, BookOpen, BrainCircuit, Clock, TrendingUp } from "lucide-react";
 
 // Helper function to format file size
 const formatFileSize = (bytes) => {
@@ -104,6 +104,23 @@ const DocumentCard = ({ document, onDelete }) => {
               <span className="text-xs font-semibold text-emerald-700">{document.quizCount} quiz</span>
             </div>
           )}
+        </div>
+        <div className="mt-4 space-y-1.5">
+          <div className="flex items-center justify-between text-xs">
+            <span className="flex items-center gap-1.5 text-slate-500">
+              <TrendingUp className="w-3.5 h-3.5" strokeWidth={2} />
+              Progression
+            </span>
+            <span className="font-semibold text-slate-600">
+              {document.progress || 0}%
+            </span>
+          </div>
+          <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-linear-to-r from-emerald-400 to-teal-500 rounded-full transition-all duration-300"
+              style={{ width: `${Math.min(100, Math.max(0, document.progress || 0))}%` }}
+            />
+          </div>
         </div>
       </div>
 

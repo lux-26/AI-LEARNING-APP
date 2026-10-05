@@ -5,6 +5,7 @@ import ChatHistory from "../models/ChatHistory.js";
 import * as geminiService from "../utils/geminiService.js";
 import { findRelevantChunks } from "../utils/textChunker.js";
 import Notification from "../models/Notification.js";
+import { recordLearningActivity } from "../utils/studyActivity.js";
 
 // @desc     Generate flashcards from document
 // @route    POST /api/ai/generate-flashcards
@@ -163,6 +164,11 @@ export const generateSummary = async (req, res, next) => {
 
     // Generate summary using Gemini
     const summary = await geminiService.generateSummary(document.extractedText);
+    await recordLearningActivity({
+      userId: req.user._id,
+      documentId: document._id,
+      activity: "summary",
+    });
 
     res.status(200).json({
       success: true,
@@ -209,6 +215,15 @@ export const chat = async (req, res, next) => {
     // Find relevant chunks
     const relevantChunks = findRelevantChunks(document.chunks, question, 3);
     const chunksIndices = relevantChunks.map((c) => c.chunkIndex);
+    const relevantPages = [
+      ...new Set(
+        relevantChunks
+          .map((chunk) => chunk.pageNumber)
+          .filter(
+            (pageNumber) => Number.isInteger(pageNumber) && pageNumber > 0,
+          ),
+      ),
+    ];
 
     // Get or create chat history
     let chatHistory = await ChatHistory.findOne({
@@ -236,16 +251,23 @@ export const chat = async (req, res, next) => {
         content: question,
         timestamp: new Date(),
         relevantChunks: [],
+        relevantPages: [],
       },
       {
         role: "assistant",
         content: answer,
         timestamp: new Date(),
         relevantChunks: chunksIndices,
+        relevantPages,
       },
     );
 
     await chatHistory.save();
+    await recordLearningActivity({
+      userId: req.user._id,
+      documentId: document._id,
+      activity: "chat",
+    });
 
     res.status(200).json({
       success: true,
@@ -253,6 +275,7 @@ export const chat = async (req, res, next) => {
         question,
         answer,
         relevantChunks: chunksIndices,
+        relevantPages,
         chatHistoryId: chatHistory._id,
       },
       message: "Response generated successfully",

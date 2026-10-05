@@ -1,4 +1,5 @@
 import Quiz from "..//models/Quiz.js";
+import { recordLearningActivity } from "../utils/studyActivity.js";
 
 // @desc     Récupérer tous les quiz d’un document
 // @route    GET /api/quizzes/:documentId
@@ -10,6 +11,25 @@ export const getQuizzes = async (req, res, next) => {
       documentId: req.params.documentId,
     })
       .populate("documentId", "title fileName")
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      count: quizzes.length,
+      data: quizzes,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc     Récupérer tous les quiz de l’utilisateur
+// @route    GET /api/quizzes
+// @access   Privée
+export const getAllQuizzes = async (req, res, next) => {
+  try {
+    const quizzes = await Quiz.find({ userId: req.user._id })
+      .populate("documentId", "title")
       .sort({ createdAt: -1 });
 
     res.status(200).json({
@@ -116,6 +136,11 @@ export const submitQuiz = async (req, res, next) => {
     quiz.completedAt = new Date();
 
     await quiz.save();
+    await recordLearningActivity({
+      userId: req.user._id,
+      documentId: quiz.documentId,
+      activity: "quiz",
+    });
 
     res.status(200).json({
       success: true,

@@ -1,10 +1,18 @@
-import React, { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Sparkles, BookOpen, Lightbulb } from "lucide-react";
+import {
+  Sparkles,
+  BookOpen,
+  Lightbulb,
+  Play,
+  Pause,
+  Download,
+} from "lucide-react";
 import aiService from "../../services/ai.Service.js";
 import toast from "react-hot-toast";
 import MarkdownRenderer from "../common/MarkdownRenderer.jsx";
 import Modal from "../common/Modal.jsx";
+import { exportSummaryPdf } from "../../utils/pdfExport.js";
 
 const AIActions = ({ document }) => {
   const { id: documentId } = useParams();
@@ -13,6 +21,13 @@ const AIActions = ({ document }) => {
   const [modalContent, setModalContent] = useState("");
   const [modalTitle, setModalTitle] = useState("");
   const [concept, setConcept] = useState("");
+  const [speechRate, setSpeechRate] = useState(1);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
+  const utteranceRef = useRef(null);
+  const sentencesRef = useRef([]);
+  const currentSentenceIndexRef = useRef(0);
+  const intentionalStopRef = useRef(false);
   const documentTopic =
     document?.mainTopic ||
     (Array.isArray(document?.suggestedTopics)
@@ -24,20 +39,133 @@ const AIActions = ({ document }) => {
     : document?.title
       ? `ex. « Un concept de ${document.title} »`
       : "Entrez un mot-clé du document...";
+  const hasModalActions =
+    modalTitle === "Résumé généré" || modalTitle.startsWith("Explication de ");
 
   const handleGenerateSummary = async () => {
     setLoadingAction("summary");
     try {
       const { summary } = await aiService.generateSummary(documentId);
+      stopSpeech();
       setModalTitle("Résumé généré");
       setModalContent(summary);
+      setSpeechRate(1);
       setIsModalOpen(true);
-    } catch (error) {
+    } catch {
       toast.error("Échec de la génération du résumé.");
     } finally {
       setLoadingAction(null);
     }
   };
+
+  const stopSpeech = () => {
+    intentionalStopRef.current = true;
+    if ("speechSynthesis" in window) {
+      window.speechSynthesis.cancel();
+    }
+    setIsSpeaking(false);
+    setIsPaused(false);
+    utteranceRef.current = null;
+    sentencesRef.current = [];
+    currentSentenceIndexRef.current = 0;
+  };
+
+  const getSpeechText = (content) =>
+    content
+      .replace(/```[\w-]*\n?/g, "")
+      .replace(/\\rightarrow/g, " vers ")
+      .replace(/[$#*_>`~]/g, "")
+      .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+      .replace(/\s+/g, " ")
+      .trim();
+
+  const playCurrentSentence = () => {
+    const sentences = sentencesRef.current;
+    const sentence = sentences[currentSentenceIndexRef.current];
+
+    if (!sentence) {
+      setIsSpeaking(false);
+      setIsPaused(false);
+      utteranceRef.current = null;
+      return;
+    }
+
+    intentionalStopRef.current = false;
+    const utterance = new SpeechSynthesisUtterance(sentence);
+    utteranceRef.current = utterance;
+    utterance.lang = "fr-FR";
+    utterance.rate = speechRate;
+    utterance.onstart = () => {
+      setIsSpeaking(true);
+      setIsPaused(false);
+    };
+    utterance.onend = () => {
+      if (utteranceRef.current !== utterance) return;
+      currentSentenceIndexRef.current += 1;
+      playCurrentSentence();
+    };
+    utterance.onerror = (event) => {
+      if (utteranceRef.current !== utterance) return;
+      utteranceRef.current = null;
+      if (
+        intentionalStopRef.current ||
+        event.error === "interrupted" ||
+        event.error === "canceled"
+      ) {
+        return;
+      }
+      setIsSpeaking(false);
+      setIsPaused(false);
+      toast.error("Échec de la lecture du résumé.");
+    };
+    window.speechSynthesis.speak(utterance);
+  };
+
+  const handleSpeak = () => {
+    if (!("speechSynthesis" in window)) {
+      toast.error("La synthèse vocale n'est pas disponible sur ce navigateur.");
+      return;
+    }
+
+    if (isPaused) {
+      playCurrentSentence();
+      return;
+    }
+
+    stopSpeech();
+    sentencesRef.current = getSpeechText(modalContent)
+      .split(/(?<=[.?!])\s+/)
+      .map((sentence) => sentence.trim())
+      .filter(Boolean);
+    currentSentenceIndexRef.current = 0;
+    playCurrentSentence();
+  };
+
+  const handlePauseSpeech = () => {
+    if (
+      "speechSynthesis" in window &&
+      (window.speechSynthesis.speaking || utteranceRef.current)
+    ) {
+      intentionalStopRef.current = true;
+      window.speechSynthesis.pause();
+      window.speechSynthesis.cancel();
+      utteranceRef.current = null;
+      setIsSpeaking(false);
+      setIsPaused(true);
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      if ("speechSynthesis" in window) {
+        intentionalStopRef.current = true;
+        window.speechSynthesis.cancel();
+      }
+      utteranceRef.current = null;
+      sentencesRef.current = [];
+      currentSentenceIndexRef.current = 0;
+    };
+  }, []);
 
   const handleExplainConcept = async (e) => {
     e.preventDefault();
@@ -51,11 +179,12 @@ const AIActions = ({ document }) => {
         documentId,
         concept,
       );
+      stopSpeech();
       setModalTitle(`Explication de « ${concept} »`);
       setModalContent(explanation);
       setIsModalOpen(true);
       setConcept("");
-    } catch (error) {
+    } catch {
       toast.error("Échec de l'explication du concept.");
     } finally {
       setLoadingAction(null);
@@ -165,10 +294,73 @@ const AIActions = ({ document }) => {
       {/* Result Modal */}
       <Modal
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        onClose={() => {
+          stopSpeech();
+          setIsModalOpen(false);
+        }}
         title={modalTitle}
+        headerActions={
+          hasModalActions ? (
+            <>
+              <div className="flex shrink-0 items-center gap-1 rounded-xl bg-slate-100 p-1">
+                <button
+                  type="button"
+                  onClick={
+                    isSpeaking && !isPaused ? handlePauseSpeech : handleSpeak
+                  }
+                  className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-slate-600 transition-colors hover:bg-white hover:text-slate-900"
+                  aria-label={
+                    isSpeaking && !isPaused
+                      ? "Mettre en pause"
+                      : isPaused
+                        ? "Reprendre la lecture"
+                        : "Lire le résumé"
+                  }
+                  title={
+                    isSpeaking && !isPaused
+                      ? "Pause"
+                      : isPaused
+                        ? "Reprendre"
+                        : "Lire"
+                  }
+                >
+                  {isSpeaking && !isPaused ? (
+                    <Pause className="h-4 w-4" strokeWidth={2} />
+                  ) : (
+                    <Play className="h-4 w-4" strokeWidth={2} />
+                  )}
+                </button>
+                <select
+                  value={speechRate}
+                  onChange={(event) => {
+                    stopSpeech();
+                    setSpeechRate(Number(event.target.value));
+                  }}
+                  className="h-8 rounded-lg border-0 bg-transparent px-1 text-xs font-semibold text-slate-600 focus:outline-none focus:ring-0"
+                  aria-label="Vitesse de lecture"
+                >
+                  {[0.75, 1, 1.25, 1.5].map((rate) => (
+                    <option key={rate} value={rate}>
+                      {rate}x
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <button
+                type="button"
+                onClick={() =>
+                  exportSummaryPdf({ title: modalTitle, content: modalContent })
+                }
+                className="inline-flex shrink-0 h-11 items-center justify-center gap-2 px-5 bg-linear-to-r from-emerald-600 to-emerald-500 hover:from-emerald-600 hover:to-emerald-600 text-white text-sm font-semibold rounded-xl transition-all duration-200 shadow-lg shadow-purple-500/25 active:scale-95"
+              >
+                <Download className="h-4 w-4" strokeWidth={2} />
+                Exporter PDF
+              </button>
+            </>
+          ) : null
+        }
       >
-        <div className="max-h-[60vh] overflow-y-auto prose prose-sm maw-w-none prose-slate ">
+        <div className="max-h-[60vh] overflow-y-auto prose prose-sm max-w-none prose-slate ">
           <MarkdownRenderer content={modalContent} />
         </div>
       </Modal>

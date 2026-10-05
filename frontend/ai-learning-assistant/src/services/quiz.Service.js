@@ -12,6 +12,15 @@ const getQuizzesForDocument = async (documentId) => {
   }
 };
 
+const getAllQuizzes = async () => {
+  try {
+    const response = await axiosInstance.get(API_PATHS.QUIZZES.GET_ALL_QUIZZES);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || { message: "Échec du chargement des quiz" };
+  }
+};
+
 const getQuizById = async (quizId) => {
   try {
     const response = await axiosInstance.get(
@@ -58,6 +67,7 @@ const deleteQuiz = async (quizId) => {
 };
 
 const quizService = {
+  getAllQuizzes,
   getQuizzesForDocument,
   getQuizById,
   submitQuiz,

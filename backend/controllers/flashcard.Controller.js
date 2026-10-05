@@ -1,4 +1,5 @@
 import Flashcard from "../models/Flashcard.js";
+import { recordLearningActivity } from "../utils/studyActivity.js";
 
 // @desc     Récupérer toutes les fiches d’un document
 // @route     GET  /api/flashcards/:documentId
@@ -49,6 +50,21 @@ export const getAllFlashcardSets = async (req, res, next) => {
 // @access  Privée
 export const reviewFlashcard = async (req, res, next) => {
   try {
+    const { difficulty } = req.body;
+    const reviewIntervals = {
+      hard: 1,
+      medium: 3,
+      easy: 7,
+    };
+
+    if (difficulty && !Object.hasOwn(reviewIntervals, difficulty)) {
+      return res.status(400).json({
+        success: false,
+        error: "Difficulté de révision invalide",
+        statusCode: 400,
+      });
+    }
+
     const flashcardSet = await Flashcard.findOne({
       "cards._id": req.params.cardId,
       userId: req.user._id,
@@ -76,8 +92,22 @@ export const reviewFlashcard = async (req, res, next) => {
     // Mettre à jour les informations de révision
     flashcardSet.cards[cardIndex].lastReviewed = new Date();
     flashcardSet.cards[cardIndex].reviewCount += 1;
+    flashcardSet.cards[cardIndex].difficulty =
+      difficulty || flashcardSet.cards[cardIndex].difficulty;
+
+    const nextReviewDate = new Date();
+    nextReviewDate.setDate(
+      nextReviewDate.getDate() +
+        reviewIntervals[flashcardSet.cards[cardIndex].difficulty],
+    );
+    flashcardSet.cards[cardIndex].nextReviewDate = nextReviewDate;
 
     await flashcardSet.save();
+    await recordLearningActivity({
+      userId: req.user._id,
+      documentId: flashcardSet.documentId,
+      activity: "flashcard",
+    });
 
     res.status(200).json({
       success: true,
@@ -147,18 +177,18 @@ export const deleteFlashcardSet = async (req, res, next) => {
 
     if (!flashcardSet) {
       return res.status(404).json({
-        success: flase,
+        success: false,
         error: "Ensemble de fiches introuvable",
         statusCode: 404,
       });
     }
 
-    await flashcardSet.deleteOne()
+    await flashcardSet.deleteOne();
 
     res.status(200).json({
       success: true,
-      message: 'Ensemble de fiches supprimé avec succès'
-    })
+      message: "Ensemble de fiches supprimé avec succès",
+    });
   } catch (error) {
     next(error);
   }

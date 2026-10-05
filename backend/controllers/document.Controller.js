@@ -6,6 +6,7 @@ import fs from "fs/promises";
 import mongoose from "mongoose";
 import { extractTextFromPDF } from "../utils/pdfParser.js";
 import Notification from "../models/Notification.js";
+import StudyProgress from "../models/StudyProgress.js";
 
 // @desc   upload PDF document
 // @route   POST /api/doucements/upload
@@ -122,9 +123,32 @@ export const getDocuments = async (req, res, next) => {
         },
       },
       {
+        $lookup: {
+          from: "studyprogresses",
+          let: { documentId: "$_id", ownerId: "$userId" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$documentId", "$$documentId"] },
+                    { $eq: ["$userId", "$$ownerId"] },
+                  ],
+                },
+              },
+            },
+            { $project: { _id: 0, progress: 1 } },
+          ],
+          as: "studyProgress",
+        },
+      },
+      {
         $addFields: {
           flashcardCount: { $size: "$flashcardSets" },
           quizCount: { $size: "$quizzes" },
+          progress: {
+            $ifNull: [{ $arrayElemAt: ["$studyProgress.progress", 0] }, 0],
+          },
         },
       },
       {
@@ -133,6 +157,7 @@ export const getDocuments = async (req, res, next) => {
           chunks: 0,
           flashcardSets: 0,
           quizzes: 0,
+          studyProgress: 0,
         },
       },
       {
@@ -177,6 +202,10 @@ export const getDocument = async (req, res, next) => {
       documentId: document._id,
       userId: req.user._id,
     });
+    const studyProgress = await StudyProgress.findOne({
+      documentId: document._id,
+      userId: req.user._id,
+    }).select("progress");
 
     //Update last accessed
     document.lastAccessed = Date.now();
@@ -186,10 +215,48 @@ export const getDocument = async (req, res, next) => {
     const documentData = document.toObject();
     documentData.flashcardCount = flashcardCount;
     documentData.quizCount = quizCount;
+    documentData.progress = studyProgress?.progress || 0;
 
     res.status(200).json({
       success: true,
       data: documentData,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Get study progress for a document
+// @route   GET /api/documents/:id/progress
+// @access  Private
+export const getDocumentProgress = async (req, res, next) => {
+  try {
+    const document = await Document.findOne({
+      _id: req.params.id,
+      userId: req.user._id,
+    }).select("_id");
+
+    if (!document) {
+      return res.status(404).json({
+        success: false,
+        error: "Document not found",
+        statusCode: 404,
+      });
+    }
+
+    const progress =
+      (await StudyProgress.findOne({
+        userId: req.user._id,
+        documentId: document._id,
+      })) ||
+      new StudyProgress({
+        userId: req.user._id,
+        documentId: document._id,
+      });
+
+    res.status(200).json({
+      success: true,
+      data: progress,
     });
   } catch (error) {
     next(error);

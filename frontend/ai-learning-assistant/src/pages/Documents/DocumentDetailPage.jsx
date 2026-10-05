@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import documentService from "../../services/document.Service.js";
 import Spinner from "../../components/common/Spinner.jsx";
@@ -43,7 +43,7 @@ const DocumentDetailPage = () => {
       return filePath;
     }
 
-    const baseUrl = process.env.REACT_APP_API_URL || "http://localhost:8000";
+    const baseUrl = import.meta.env.VITE_API_URL || "http://localhost:8000";
     return `${baseUrl}${filePath.startsWith("/") ? "" : "/"}${filePath}`;
   };
 
@@ -131,6 +131,24 @@ const DocumentDetailPage = () => {
         </Link>
       </div>
       <PageHeader title={document.data.title} />
+      <div className="mb-5 bg-white/80 backdrop-blur-xl border border-slate-200/60 rounded-2xl shadow-xl shadow-slate-200/50 p-5">
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
+            Progression du document
+          </span>
+          <span className="text-sm font-semibold text-slate-600">
+            {document.data.progress || 0}%
+          </span>
+        </div>
+        <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+          <div
+            className="h-full bg-linear-to-r from-emerald-400 to-teal-500 rounded-full transition-all duration-300"
+            style={{
+              width: `${Math.min(100, Math.max(0, document.data.progress || 0))}%`,
+            }}
+          />
+        </div>
+      </div>
       <Tabs tabs={tabs} activeTab={activeTab} setActiveTab={setActiveTab} />
     </div>
   );

@@ -3,6 +3,7 @@ import {
   uploadDocument,
   getDocuments,
   getDocument,
+  getDocumentProgress,
   deleteDocument,
 } from "../controllers/document.Controller.js";
 
@@ -16,6 +17,7 @@ router.use(protect);
 
 router.post("/upload", upload.single("file"), uploadDocument);
 router.get("/", getDocuments);
+router.get("/:id/progress", getDocumentProgress);
 router.get("/:id", getDocument);
 router.delete("/:id", deleteDocument);
 

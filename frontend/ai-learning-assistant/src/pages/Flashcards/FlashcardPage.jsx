@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams, Link } from "react-router-dom";
 import {
   ArrowLeft,
@@ -28,7 +28,7 @@ const FlashcardPage = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const fetchFlashcards = async () => {
+  const fetchFlashcards = useCallback(async () => {
     setLoadind(true);
     try {
       const response =
@@ -41,11 +41,11 @@ const FlashcardPage = () => {
     } finally {
       setLoadind(false);
     }
-  };
+  }, [documentId]);
 
   useEffect(() => {
-    fetchFlashcards();
-  }, [documentId]);
+    void Promise.resolve().then(fetchFlashcards);
+  }, [documentId, fetchFlashcards]);
 
   const handleGenerateFlashcards = async () => {
     setGenerating(true);
@@ -61,25 +61,34 @@ const FlashcardPage = () => {
   };
 
   const handleNextCard = () => {
-    handleReview(currentCardIndex);
     setCurrentCardIndex((prevIndex) => (prevIndex + 1) % flashcards.length);
   };
 
   const handlePrevCard = () => {
-    handleReview(currentCardIndex);
     setCurrentCardIndex(
       (prevIndex) => (prevIndex - 1 + flashcards.length) % flashcards.length,
     );
   };
 
-  const handleReview = async (index) => {
+  const handleReview = async (difficulty) => {
     const currentCard = flashcards[currentCardIndex];
     if (!currentCard) return;
 
     try {
-      await flashcardService.reviewFlashcard(currentCard._id, index);
+      await flashcardService.reviewFlashcard(currentCard._id, difficulty);
+      setFlashcards((cards) =>
+        cards.map((card) =>
+          card._id === currentCard._id
+            ? {
+                ...card,
+                difficulty,
+                reviewCount: (card.reviewCount || 0) + 1,
+              }
+            : card,
+        ),
+      );
       toast.success("Fiche révisée !");
-    } catch (error) {
+    } catch {
       toast.error("Échec de la révision de la fiche.");
     }
   };
@@ -94,7 +103,7 @@ const FlashcardPage = () => {
       );
 
       toast.success("État favori de la fiche mis à jour !");
-    } catch (error) {
+    } catch {
       toast.error("Échec de la mise à jour du favori.");
     }
   };
@@ -152,6 +161,22 @@ const FlashcardPage = () => {
           >
             Suivante <ChevronRight size={16} />
           </Button>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-slate-500">Difficulté :</span>
+          {[
+            ["hard", "Difficile"],
+            ["medium", "Moyen"],
+            ["easy", "Facile"],
+          ].map(([difficulty, label]) => (
+            <Button
+              key={difficulty}
+              onClick={() => handleReview(difficulty)}
+              variant="secondary"
+            >
+              {label}
+            </Button>
+          ))}
         </div>
       </div>
     );
