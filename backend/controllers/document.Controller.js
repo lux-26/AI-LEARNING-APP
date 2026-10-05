@@ -5,6 +5,7 @@ import { chunkText } from "../utils/textChunker.js";
 import fs from "fs/promises";
 import mongoose from "mongoose";
 import { extractTextFromPDF } from "../utils/pdfParser.js";
+import { createNotification } from "../utils/notificationService.js";
 
 // @desc   importer un document PDF
 // @route   POST /api/documents/upload
@@ -44,6 +45,13 @@ export const uploadDocument = async (req, res, next) => {
       filePath: fileUrl,
       fileSize: req.file.size,
       status: "processing",
+    });
+
+    await createNotification({
+      user: req.user._id,
+      title: "Document importé",
+      message: `Le document « ${title} » a été importé avec succès.`,
+      type: "document",
     });
 
     // Traiter le PDF en arrière-plan (en production, utiliser une file comme Bull)

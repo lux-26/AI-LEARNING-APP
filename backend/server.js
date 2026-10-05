@@ -14,6 +14,7 @@ import flashcardRoutes from "./routes/flashcard.Routes.js";
 import aiRoutes from "./routes/ai.Routes.js";
 import quizRoutes from "./routes/quiz.Routes.js";
 import progressRoutes from "./routes/progress.Routes.js";
+import notificationRoutes from "./routes/notification.Routes.js";
 
 // Configuration de __dirname pour les modules ES6 (car __dirname n'existe pas nativement en ES modules)
 const __filename = fileURLToPath(import.meta.url);
@@ -30,7 +31,7 @@ connectDB();
 app.use(
   cors({
     origin: "*", // Autorise toutes les origines (à restreindre en production si besoin)
-    methods: ["GET", "POST", "PUT", "DELETE"], // Méthodes HTTP autorisées
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"], // Méthodes HTTP autorisées
     allowedHeaders: ["Content-Type", "Authorization"], // En-têtes autorisés (notamment pour le token JWT)
     credentials: true,
   }),
@@ -52,6 +53,7 @@ app.use("/api/flashcards", flashcardRoutes);
 app.use("/api/ai", aiRoutes);
 app.use("/api/quizzes", quizRoutes);
 app.use("/api/progress", progressRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 // Middleware de gestion pour les routes introuvables (404 introuvable)
 app.use((req, res) => {
