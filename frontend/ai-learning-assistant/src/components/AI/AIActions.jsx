@@ -6,7 +6,17 @@ import toast from "react-hot-toast";
 import MarkdownRenderer from "../common/MarkdownRenderer.jsx";
 import Modal from "../common/Modal.jsx";
 
-const AIActions = () => {
+const getConceptPlaceholder = (document) => {
+  const documentTitle = document?.title
+    ?.replace(/\.[^/.]+$/, "")
+    .trim();
+
+  return documentTitle
+    ? `ex. : « ${documentTitle} »`
+    : "ex. : « Saisissez un concept du document... »";
+};
+
+const AIActions = ({ document }) => {
   const { id: documentId } = useParams();
   const [loadingAction, setLoadingAction] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -18,11 +28,11 @@ const AIActions = () => {
     setLoadingAction("summary");
     try {
       const { summary } = await aiService.generateSummary(documentId);
-      setModalTitle("Generated Summary");
+      setModalTitle("Résumé généré");
       setModalContent(summary);
       setIsModalOpen(true);
     } catch (error) {
-      toast.error("Failed to generate summary.");
+      toast.error("Échec de la génération du résumé.");
     } finally {
       setLoadingAction(null);
     }
@@ -31,7 +41,7 @@ const AIActions = () => {
   const handleExplainConcept = async (e) => {
     e.preventDefault();
     if (!concept.trim()) {
-      toast.error("Please enter a concept to explain.");
+      toast.error("Veuillez saisir un concept à expliquer.");
       return;
     }
     setLoadingAction("explain");
@@ -40,12 +50,12 @@ const AIActions = () => {
         documentId,
         concept,
       );
-      setModalTitle(`Explanation of "${concept}"`);
+      setModalTitle(`Explication de « ${concept} »`);
       setModalContent(explanation);
       setIsModalOpen(true);
       setConcept("");
     } catch (error) {
-      toast.error("Failed to explain concept.");
+      toast.error("Échec de l’explication du concept.");
     } finally {
       setLoadingAction(null);
     }
@@ -54,7 +64,7 @@ const AIActions = () => {
   return (
     <>
       <div className="bg-white/80 backdrop-blur-xl border border-slate-200/60 rounded-2xl shadow-xl shadow-slate-200/50 overflow-hidden">
-        {/* Header */}
+        {/* En-tête */}
         <div className="px-6 py-5 border-b border-slate-200/60 bg-linear-to-br from-slate-50/50 to-white/50">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-linear-to-br from-emerald-500 to-teal-600 shadow-lg shadow-purple-500/25 flex items-center justify-center">
@@ -62,14 +72,14 @@ const AIActions = () => {
             </div>
             <div>
               <h3 className="text-lg font-semibold text-slate-900">
-                AI Assistant
+                Assistant IA
               </h3>
-              <p className="text-xs text-slate-500">Powered by advanced AI</p>
+              <p className="text-xs text-slate-500">Propulsé par une IA avancée</p>
             </div>
           </div>
         </div>
         <div className="p-6 space-y-6">
-          {/* Generate Summary */}
+          {/* Générer un résumé */}
           <div className="group p-5 bg-linear-to-br from-slate-50/50 to-white rounded-xl border border-slate-200/60 hover:border-slate-300/60 hover:shadow-md transition-all duration-200">
             <div className="flex items-start justify-between gap-4">
               <div className="flex-1">
@@ -81,11 +91,11 @@ const AIActions = () => {
                     />
                   </div>
                   <h4 className="font-semibold text-slate-900">
-                    Generate Summary
+                    Générer un résumé
                   </h4>
                 </div>
                 <p className="text-slate-600 leading-relaxed">
-                  Get a concise summary of the entire document.
+                  Obtenez un résumé concis de l’ensemble du document.
                 </p>
               </div>
               <button
@@ -96,16 +106,16 @@ const AIActions = () => {
                 {loadingAction === "summary" ? (
                   <span className="flex items-center gap-2">
                     <div className="w-4 h-4 border-2 border-t-white rounded-full animate-spin" />
-                    Loading...
+                    Chargement...
                   </span>
                 ) : (
-                  "Summarize"
+                  "Résumer"
                 )}
               </button>
             </div>
           </div>
 
-          {/* Explain Concept */}
+          {/* Expliquer un concept */}
           <div className="group p-5 bg-linear-to-br from-slate-50/50 to-white rounded-xl border border-slate-200/60 hover:border-slate-300/60 hover:shadow-md transition-all duration-200">
             <form onSubmit={handleExplainConcept}>
               <div className="flex items-center gap-2 mb-3 ">
@@ -116,19 +126,19 @@ const AIActions = () => {
                   />
                 </div>
                 <h4 className="font-semibold text-slate-900">
-                  Explain a Concept
+                  Expliquer un concept
                 </h4>
               </div>
               <p className="text-sm text-slate-600 leading-relaxed mb-4">
-                Enter a topic or concept from the document to get a detailed
-                explanation.
+                Saisissez un sujet ou un concept du document pour obtenir une
+                explication détaillée.
               </p>
               <div className="flex items-center gap-3">
                 <input
                   type="text"
                   value={concept}
                   onChange={(e) => setConcept(e.target.value)}
-                  placeholder="e.g., 'React Hooks'"
+                  placeholder={getConceptPlaceholder(document)}
                   className="flex-1 h-11 px-4 border-2 border-slate-200 rounded-xl bg-slate-50/50 text-slate-900 placeholder-slate-400 text-sm font-medium transition-all duration-200 focus:outline-none focus:border-emerald-500 focus:bg-white focus:shadow-lg focus:shadow-purple-500/10"
                   disabled={loadingAction === "explain"}
                 />
@@ -140,10 +150,10 @@ const AIActions = () => {
                   {loadingAction === "explain" ? (
                     <span className="flex items-center gap-2">
                       <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      Loading...
+                      Chargement...
                     </span>
                   ) : (
-                    "Eplain"
+                    "Expliquer"
                   )}
                 </button>
               </div>
@@ -152,7 +162,7 @@ const AIActions = () => {
         </div>
       </div>
 
-      {/* Result Modal */}
+      {/* Modale de résultat */}
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}

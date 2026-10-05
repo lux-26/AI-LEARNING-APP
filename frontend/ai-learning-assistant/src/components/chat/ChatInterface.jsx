@@ -26,7 +26,7 @@ const ChatInterface = () => {
         const response = await aiService.getChatHistory(documentId);
         setHistory(Array.isArray(response.data) ? response.data : []);
       } catch (error) {
-        console.error("Failed to fetch chat history:", error);
+        console.error("Échec du chargement de l’historique de discussion :", error);
       } finally {
         setInitialLoading(false);
       }
@@ -61,10 +61,10 @@ const ChatInterface = () => {
       };
       setHistory((prev) => [...prev, assistantMessage]);
     } catch (error) {
-      console.error("Chat error:", error);
+      console.error("Erreur de discussion :", error);
       const errorMessage = {
         role: "assistant",
-        content: "Sorry, I encountered an error. Please try again.",
+        content: "Désolé, une erreur est survenue. Veuillez réessayer.",
         timestamp: new Date(),
       };
       setHistory((prev) => [...prev, errorMessage]);
@@ -114,7 +114,7 @@ const ChatInterface = () => {
         </div>
         <Spinner />
         <p className="text-sm text-slate-500 mt-3 font-medium">
-          Loading chat history...
+          Chargement de l’historique de discussion...
         </p>
       </div>
     );
@@ -122,7 +122,7 @@ const ChatInterface = () => {
 
   return (
     <div className="flex flex-col h-[70vh] bg-white/80 backdrop-blur-xl border border-slate-200/60 rounded-2xl shadow-xl shadow-slate-200/50 overflow-hidden">
-      {/* Message Area */}
+      {/* Zone des messages */}
       <div className="flex-1 p-6 overflow-y-auto bg-linear-to-br from-slate-50/50 to-slate-50/50">
         {history.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-center">
@@ -133,10 +133,10 @@ const ChatInterface = () => {
               />
             </div>
             <h3 className="text-base font-semibold text-slate-900 mb-2">
-              Start a conversation
+              Commencez une discussion
             </h3>
             <p className="text-sm text-slate-500">
-              Ask me anything about the document!
+              Posez-moi toutes vos questions sur le document !
             </p>
           </div>
         ) : (
@@ -168,14 +168,14 @@ const ChatInterface = () => {
         )}
       </div>
 
-      {/* Input Area */}
+      {/* Zone de saisie */}
       <div className="p-5 border-t border-slate-200/60 bg-white/80">
         <form onSubmit={handleSendMessage} className="flex items-center gap-3">
           <input
             type="text"
             value={message}
             onChange={(e) => setMessage(e.target.value)}
-            placeholder="Ask a follow-up question..."
+            placeholder="Posez une question complémentaire..."
             className="flex-1 h-12 px-4 border-2 border-slate-200 rounded-xl bg-slate-50/50 text-slate-900 placeholder-slate-400 text-sm font-medium transition-all duration-200 focus:outline-none focus:border-emerald-500 focus:bg-white focus:shadow-lg focus:shadow-emerald-500/10"
             disabled={loading}
           />

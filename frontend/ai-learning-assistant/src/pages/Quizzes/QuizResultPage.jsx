@@ -24,7 +24,7 @@ const QuizResultPage = () => {
         const data = await quizService.getQuizResults(quizId);
         setResults(data);
       } catch (error) {
-        toast.error("Failed to fetch quiz results.");
+        toast.error("Échec du chargement des résultats du quiz.");
         console.error(error);
       } finally {
         setLoading(false);
@@ -46,7 +46,7 @@ const QuizResultPage = () => {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="text-center">
-          <p className="text-slate-600 text-lg">Quiz results not found.</p>
+          <p className="text-slate-600 text-lg">Résultats du quiz introuvables.</p>
         </div>
       </div>
     );
@@ -67,15 +67,15 @@ const QuizResultPage = () => {
   };
 
   const getScoreMessage = (score) => {
-    if (score >= 90) return "Outstanding! ";
-    if (score >= 80) return "Great job! ";
-    if (score >= 70) return "Good work! ";
-    if (score >= 60) return "Not bab! ";
-    return "Keep practicing";
+    if (score >= 90) return "Excellent ! ";
+    if (score >= 80) return "Très bon travail ! ";
+    if (score >= 70) return "Bon travail ! ";
+    if (score >= 60) return "Vous pouvez encore progresser ! ";
+    return "Continuez à vous entraîner";
   };
   return (
     <div className="max-w-5xl mx-auto">
-      {/* Back Button */}
+      {/* Bouton de retour */}
       <div className="mb-6">
         <Link
           to={`/documents/${quiz.document._id}`}
@@ -85,11 +85,11 @@ const QuizResultPage = () => {
             className="w-4 h-5 group-hover:-translate-x-1 transition-transform duration-200"
             strokeWidth={2}
           />
-          Back to Document
+          Retour au document
         </Link>
       </div>
 
-      <PageHeader title={`${quiz.title || "Quiz"} Results`} />
+      <PageHeader title={`${quiz.title || "Quiz"} — Résultats`} />
 
       {/* Score */}
       <div className="bg-white/80 backdrop-blur-xl border-2 border-slate-200 rounded-2xl shadow-xl shadow-slate-200/50 p-8 mb-8">
@@ -100,7 +100,7 @@ const QuizResultPage = () => {
 
           <div>
             <p className="text-sm font-semibold text-slate-600 uppercase tracking-wide mb-2">
-              Your Score
+              Votre score
             </p>
             <div
               className={`inline-block text-5xl font-bold bg-linear-to-r ${getScoreColor(
@@ -114,7 +114,7 @@ const QuizResultPage = () => {
             </p>
           </div>
 
-          {/* Stats */}
+          {/* Statistiques */}
           <div className="flex items-center justify-center gap-4 pt-4">
             <div className="flex items-center gap-2 px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl">
               <Target className="w-4 h-4 text-slate-600" strokeWidth={2} />
@@ -128,25 +128,25 @@ const QuizResultPage = () => {
                 strokeWidth={2}
               />
               <span className="text-sm font-semibold text-emerald-700">
-                {correctAnswers} Correct
+                {correctAnswers} Correctes
               </span>
             </div>
             <div className="flex items-center gap-2 px-4 py-2 bg-rose-50 border border-rose-200 rounded-xl">
               <XCircle className="w-4 h-4 text-rose-600" strokeWidth={2} />
               <span className="text-sm font-semibold text-rose-700">
-                {incorrectAnswers} Incorrect
+                {incorrectAnswers} Incorrectes
               </span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Questions Review */}
+      {/* Révision des questions */}
       <div className="space-y-6">
         <div className="flex items-center gap-3 mb-2">
           <BookOpen className="w-5 h-5 text-slate-600" strokeWidth={2} />
           <h3 className="text-lg font-semibold text-slate-900">
-            Detailed Review
+            Révision détaillée
           </h3>
         </div>
 
@@ -227,13 +227,13 @@ const QuizResultPage = () => {
                                 className="w-3 h-3"
                                 strokeWidth={2.5}
                               />
-                              Correct
+                              Correctes
                             </span>
                           )}
                           {isWrongAnswer && (
                             <span className="inline-flex items-center gap-1 px-2 py-1 bg-rose-100 border border-rose-300 rounded-lg text-xs font-semibold text-rose-700">
                               <XCircle className="w-3 h-3" strokeWidth={2.5} />{" "}
-                              Your Answer
+                              Votre réponse
                             </span>
                           )}
                         </div>
@@ -242,7 +242,7 @@ const QuizResultPage = () => {
                   );
                 })}
 
-                {/* Explanation */}
+                {/* Explication */}
 
                 {result.explanation && (
                   <div className="p-4 bg-linear-to-br from-slate-50 to-slate-100/50 border border-slate-200 rounded-xl">
@@ -255,7 +255,7 @@ const QuizResultPage = () => {
                       </div>
                       <div className="flex-1">
                         <p className="text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1">
-                          Explanation
+                          Explication
                         </p>
                         <p className="text-sm text-slate-700 leading-relaxed">
                           {result.explanation}
@@ -270,13 +270,13 @@ const QuizResultPage = () => {
         })}
       </div>
 
-      {/* Action Button */}
+      {/* Bouton d’action */}
       <div className="mt-8 flex justify-center">
         <Link to={`/documents/${quiz.document._id}`}>
           <button className="group relative px-8 h-12 bg-linear-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-semibold text-sm rounded-xl transition-all duration-200 shadow-lg shadow-emerald-500/25 active:scale-95 overflow-hidden">
             <span className="relative z-10 flex items-center gap-2">
               <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform duration-200" strokeWidth={2.5} />
-              Return to Document
+              Retour au document
             </span>
             <div className="absolute inset-0 bg-linear-to-r from-white/0 via-white/20 to-white/0 -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
           </button>

@@ -11,13 +11,13 @@ const DocumentListPage = () => {
   const [documents, setDocuments] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // State for upload modal
+  // État de la modale d’importation
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [uploadFile, setUploadFile] = useState(null);
   const [uploadTitle, setUploadTitle] = useState("");
   const [uploading, setUploading] = useState(false);
 
-  // State for delete confirmation modal
+  // État de la modale de confirmation de suppression
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [selectedDoc, setSelectedDoc] = useState(null);
@@ -27,7 +27,7 @@ const DocumentListPage = () => {
       const data = await documentService.getDocuments();
       setDocuments(data);
     } catch (error) {
-      toast.error("Failed to fetch documents.");
+      toast.error("Échec du chargement des documents.");
       console.error(error);
     } finally {
       setLoading(false);
@@ -49,7 +49,7 @@ const DocumentListPage = () => {
   const handleUpload = async (e) => {
     e.preventDefault();
     if (!uploadFile || !uploadTitle) {
-      toast.error("Please provide a title and select a file.");
+      toast.error("Veuillez saisir un titre et sélectionner un fichier.");
       return;
     }
     setUploading(true);
@@ -59,14 +59,14 @@ const DocumentListPage = () => {
 
     try {
       await documentService.uploadDocument(formData);
-      toast.success("Document uploaded successfully!");
+      toast.success("Document importé avec succès !");
       setIsUploadModalOpen(false);
       setUploadFile(null);
       setUploadTitle("");
       setLoading(true);
       fetchDocuments();
     } catch (error) {
-      toast.error(error.message || "Upload failed.");
+      toast.error(error.message || "Échec de l’importation.");
     } finally {
       setUploading(false);
     }
@@ -89,7 +89,7 @@ const DocumentListPage = () => {
       setSelectedDoc(null);
       setDocuments(documents.filter((d) => d._id !== selectedDoc._id));
     } catch (error) {
-      toast.error(error.message || "Failed to delete document.");
+      toast.error(error.message || "Échec de la suppression du document.");
     } finally {
       setDeleting(false);
     }
@@ -117,18 +117,18 @@ const DocumentListPage = () => {
             </div>
 
             <h3 className="text-xl font-medium text-slate-900 tracking-tight mb-2">
-              No documents yet
+              Aucun document pour le moment
             </h3>
             <p className="text-slate-500 text-sm mb-6">
-              Get started by uploading your first PDF document to begin
-              learning.
+              Commencez par importer votre premier document PDF pour commencer
+              à apprendre.
             </p>
             <Button
               onClick={() => setIsUploadModalOpen(true)}
               className="inline-flex items-center gap-2 px-6 py-3 bg-linear-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white text-sm font-semibold rounded-xl transition-all duration-200 shadow-lg shadow-emerald-500/25  hover:shadow-xl hover:shadow-emerald-500/30 active:scale-[0.98]"
             >
               <Plus className="w-4 h-4" strokeWidth={2.5} />
-              Upload Document
+              Importer un document
             </Button>
           </div>
         </div>
@@ -151,23 +151,23 @@ const DocumentListPage = () => {
 
   return (
     <div className="min-h-screen">
-      {/* Subtle background pattern */}
+      {/* Motif d’arrière-plan discret */}
       <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] bg-size-[16px-16] opacity-30 pointer-events-none" />
       <div className="relative max-w-7xl mx-auto">
-        {/* Header */}
+        {/* En-tête */}
         <div className="flex items-center justify-between mb-10">
           <div>
             <h1 className="text-2xl font-medium text-slate-900 tracking-tight mb-2">
-              My Document
+              Mes documents
             </h1>
             <p className="text-slate-500 text-sm">
-              Manage and organize your learning materials
+              Gérez et organisez vos supports d’apprentissage
             </p>
           </div>
           {documents.length > 0 && (
             <Button onClick={() => setIsUploadModalOpen(true)}>
               <Plus className="w-4 h-4" strokeWidth={2.5} />
-              Upload Document
+              Importer un document
             </Button>
           )}
         </div>
@@ -176,7 +176,7 @@ const DocumentListPage = () => {
       {isUploadModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
           <div className="relative w-full max-w-lg bg-white/95 backdrop-blur-xl border border-slate-200/60 rounded-2xl shadow-2xl shadow-slate-900/20 p-8">
-            {/* Close button */}
+            {/* Bouton de fermeture */}
             <button
               onClick={() => setIsUploadModalOpen(false)}
               className="absolute top-6 right-6 w-8 h8 flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-all duration-200"
@@ -184,22 +184,22 @@ const DocumentListPage = () => {
               <X className="w-5 h-5" strokeWidth={2} />
             </button>
 
-            {/* Modal Header */}
+            {/* En-tête de la modale */}
             <div className="mb-6">
               <h2 className="text-xl font-medium text-slate-900 tracking-tight">
-                Upload New Document
+                Importer un nouveau document
               </h2>
               <p className="text-sm text-slate-500 mt-1">
-                Add a PDF document to your library
+                Ajoutez un document PDF à votre bibliothèque
               </p>
             </div>
 
-            {/* From */}
+            {/* Formulaireulaireulaire */}
             <form onSubmit={handleUpload} className="space-y-5">
-              {/* Title Input */}
+              {/* Titre Saisie */}
               <div className="space-y-2">
                 <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wide">
-                  Document Title
+                  Titre du document
                 </label>
                 <input
                   type="text"
@@ -207,14 +207,14 @@ const DocumentListPage = () => {
                   onChange={(e) => setUploadTitle(e.target.value)}
                   required
                   className="w-full h-12 px-4 border-2 border-slate-200 rounded-xl bg-slate-50/50 text-slate-900 placeholder-slate-400 text-sm font-medium transition-all duration-200 focus:outline-none focus:border-emerald-500 focus:bg-white focus:shadow-lg focus:shadow-emerald-500/10"
-                  placeholder="e.g., React Interview Prep"
+                  placeholder="Entrez le titre de votre document..."
                 />
               </div>
 
-              {/* File Upload */}
+              {/* Importateur de fichier */}
               <div className="space-y-2">
                 <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wide">
-                  PDF File
+                  Fichier PDF
                 </label>
                 <div className="relative border-2 border-dashed border-slate-300 rounded-xl bg-slate-50/50 hover:border-emerald-400 hover:bg-emerald-50/30 transition-all duration-200">
                   <input
@@ -239,18 +239,18 @@ const DocumentListPage = () => {
                       ) : (
                         <>
                           <span className="text-emerald-600">
-                            Click to upload
+                            Cliquez pour importer
                           </span>{" "}
-                          or drag and drop
+                          ou faites glisser-déposer
                         </>
                       )}
                     </p>
-                    <p className="text-xs text-slate-500">PDF up to 10MB</p>
+                    <p className="text-xs text-slate-500">PDF jusqu’à 10 Mo</p>
                   </div>
                 </div>
               </div>
 
-              {/* Action Buttons */}
+              {/* Bouton d’actions */}
               <div className="flex gap-3 pt-2">
                 <button
                   type="button"
@@ -258,7 +258,7 @@ const DocumentListPage = () => {
                   disabled={uploading}
                   className="flex-1 h-11 px-4 border-2 border-slate-200 rounded-xl bg-white text-slate-700 text-sm font-semibold hover:bg-slate-50 hover:border-slate-300 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Cancel
+                  Annuler
                 </button>
                 <button
                   type="submit"
@@ -271,7 +271,7 @@ const DocumentListPage = () => {
                       Uploading...
                     </span>
                   ) : (
-                    "Upload"
+                    "Importer"
                   )}
                 </button>
               </div>
@@ -283,7 +283,7 @@ const DocumentListPage = () => {
       {isDeleteModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
           <div className="relative w-full max-w-md bg-white/95 backdrop-blur-xl border border-slate-200/60 rounded-2xl shadow-2xl shadow-slate-900/20 p-8">
-            {/* Close button */}
+            {/* Bouton de fermeture */}
             <button
               onClick={() => setIsDeleteModalOpen(false)}
               className="absolute top-6 right-6 w-8 h-5 flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-all duration-200"
@@ -291,26 +291,26 @@ const DocumentListPage = () => {
               <X className="w-5 h-5" strokeWidth={2} />
             </button>
 
-            {/* Modal Header */}
+            {/* En-tête de la modale */}
             <div className="mb-6">
               <div className="w-12 h-12 rounded-xl bg-linear-to-r from-red-100 to-red-200 flex items-center justify-center">
                 <Trash2 className="w-6 h-6 text-red-600" strokeWidth={2} />
               </div>
               <h2 className="text-xl font-medium text-slate-900 tracking-tight">
-                Confirm Deletion
+                Confirmer la suppression
               </h2>
             </div>
 
-            {/* Content */}
+            {/* Contenu */}
             <p className="text-sm text-slate-600 mb-6">
-              Are you sure want to delete the document:{" "}
+              Voulez-vous vraiment supprimer le document :{" "}
               <span className="font-semibold text-slate-900">
                 {selectedDoc?.title}
               </span>
-              ? This action cannot be undone.
+              ? Cette action est irréversible.
             </p>
 
-            {/* Action Buttons */}
+            {/* Bouton d’actions */}
             <div className="flex gap-3">
               <button
                 type="button"
@@ -318,7 +318,7 @@ const DocumentListPage = () => {
                 disabled={deleting}
                 className="flex-1 h-11 px-4 border-2 border-slate-200 rounded-xl bg-white text-slate-700 text-sm font-semibold hover:bg-slate-50 hover:border-slate-300 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Cancel
+                Annuler
               </button>
               <button
                 onClick={handleConfirmDelete}
@@ -328,10 +328,10 @@ const DocumentListPage = () => {
                 {deleting ? (
                   <span className="flex items-center justify-center gap-2">
                     <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                    Deleting...
+                    Suppression...
                   </span>
                 ) : (
-                  "Delete"
+                  "Supprimer"
                 )}
               </button>
             </div>

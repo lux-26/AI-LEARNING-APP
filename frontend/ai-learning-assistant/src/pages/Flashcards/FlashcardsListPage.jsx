@@ -19,7 +19,7 @@ const FlashListPage = () => {
 
         setFlashcardSets(response.data);
       } catch (error) {
-        toast.error("Failed to fetch flashcard sets.");
+        toast.error("Échec du chargement des ensembles de fiches.");
         console.error(error);
       } finally {
         setLoadind(false);
@@ -36,8 +36,8 @@ const FlashListPage = () => {
     if (flashcardSets.length === 0) {
       return (
         <EmptyState
-          title="No Flashcard Sets Found"
-          description="ou haven't generated any flashcards yet. Go to a document to create your first set."
+          title="Aucun ensemble de fiches trouvé"
+          description="Vous n’avez pas encore généré de fiches. Ouvrez un document pour créer votre premier ensemble."
         />
       );
     }
@@ -52,7 +52,7 @@ const FlashListPage = () => {
   };
   return (
     <div>
-      <PageHeader title="All Flashcard Sets" />
+      <PageHeader title="Tous les ensembles de fiches" />
       {renderContent()}
     </div>
   );

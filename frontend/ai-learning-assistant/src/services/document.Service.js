@@ -6,7 +6,7 @@ const getDocuments = async () => {
     const response = await axiosInstance.get(API_PATHS.DOCUMENTS.GET_DOCUMENTS);
     return response.data?.data;
   } catch (error) {
-    throw error.response?.data || { message: "Failed to fetch documents" };
+    throw error.response?.data || { message: "Échec du chargement des documents" };
   }
 };
 
@@ -23,7 +23,7 @@ const uploadDocument = async (FormData) => {
     );
     return response.data;
   } catch (error) {
-    throw error.response?.data || { message: "Failed to upload document" };
+    throw error.response?.data || { message: "Échec de l’importation du document" };
   }
 };
 
@@ -34,7 +34,7 @@ const deleteDocument = async (id) => {
     );
     return response.data;
   } catch (error) {
-    throw error.response?.data || { message: "Failed to delete document" };
+    throw error.response?.data || { message: "Échec de la suppression du document" };
   }
 };
 
@@ -46,7 +46,7 @@ const getDocumentById = async (id) => {
     return response.data;
   } catch (error) {
     throw (
-      error.response?.data || { message: "Failed to fetch document details" }
+      error.response?.data || { message: "Échec du chargement des détails du document" }
     );
   }
 };

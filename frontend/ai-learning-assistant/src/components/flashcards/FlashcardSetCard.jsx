@@ -2,6 +2,9 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { BookOpen, Sparkles, TrendingUp } from "lucide-react";
 import moment from "moment";
+import "moment/locale/fr";
+
+moment.locale("fr");
 const FlashcardSetCard = ({ flashcardSet }) => {
   const navigate = useNavigate();
 
@@ -22,7 +25,7 @@ const FlashcardSetCard = ({ flashcardSet }) => {
       onClick={handleStydyNow}
     >
       <div className="space-y-4">
-        {/* Icon and Title  */}.
+        {/* Icône et titre  */}.
         <div className="flex items-start gap-4">
           <div className="shrink-0 w-12 h-12 rounded-xl bg-linear-to-br from-emerald-100 to-teal-100 flex items-center justify-center">
             <BookOpen className="w-6 h-6 text-emerald-600" strokeWidth={2} />
@@ -35,15 +38,15 @@ const FlashcardSetCard = ({ flashcardSet }) => {
               {flashcardSet?.documentId?.title}
             </h3>
             <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">
-              Created {moment(flashcardSet.createdAt).fromNow()}
+              Créé {moment(flashcardSet.createdAt).fromNow()}
             </p>
           </div>
         </div>
-        {/* Stats */}
+        {/* Statistiques */}
         <div className="flex items-center gap-3 pt-2">
           <div className="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg">
             <span className="text-sm font-semibold text-slate-700">
-              {totalCards} {totalCards === 1 ? "Card" : "Cards"}
+              {totalCards} {totalCards === 1 ? "Carte" : "Cartes"}
             </span>
           </div>
           {reviewedCount > 0 && (
@@ -58,15 +61,15 @@ const FlashcardSetCard = ({ flashcardSet }) => {
             </div>
           )}
         </div>
-        {/* Progress Bar */}
+        {/* Barre de progression */}
         {totalCards > 0 && (
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-xs font-medium text-slate-600">
-                Progress
+                Progression
               </span>
               <span className="text-xs font-semibold text-slate-700">
-                {reviewedCount}/{totalCards} reviewed
+                {reviewedCount}/{totalCards} révisées
               </span>
             </div>
             <div className="relative h-2 bg-slate-100 rounded-full overflow-hidden">
@@ -79,7 +82,7 @@ const FlashcardSetCard = ({ flashcardSet }) => {
         )}
       </div>
 
-      {/* Study Button */}
+      {/* Bouton d’étude */}
       <div className="mt-6 pt-4 border-t border-slate-100">
         <button
           onClick={(e) => {
@@ -89,7 +92,7 @@ const FlashcardSetCard = ({ flashcardSet }) => {
           className="group/btn relative w-full h-11 bg-linear-to-r from-emerald-50 to-teal-100 hover:from-emerald-600 hover:to-teal-600 text-emerald-700 hover:text-white font-semibold text-sm rounded-xl transition-all duration-200 active:scale-95 overflow-hidden"
         >
           <span className="relative flex z-10 items-center justify-center gap-2">
-            <Sparkles className="w-4 h-4" strokeWidth={2.5} /> Study Now
+            <Sparkles className="w-4 h-4" strokeWidth={2.5} /> Étudier maintenant
           </span>
           <div className="absolute inset-0 bg-linear-to-r from-white/0 via-white/20 to-white/0 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700" />
         </button>

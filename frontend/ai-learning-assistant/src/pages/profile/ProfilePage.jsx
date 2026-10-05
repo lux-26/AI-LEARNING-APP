@@ -25,7 +25,7 @@ const ProfilePage = () => {
         setUsername(data.username);
         setEmail(data.email);
       } catch (error) {
-        toast.error("Failed to fetch profile data");
+        toast.error("Échec du chargement des données du profil");
         console.error(error);
       } finally {
         setLoading(false);
@@ -38,19 +38,19 @@ const ProfilePage = () => {
   const handleChangePassword = async (e) => {
     e.preventDefault();
     if (newPassword !== confirmNewPassword) {
-      toast.error("New password must be at least 6 characters long.");
+      toast.error("Le nouveau mot de passe doit comporter au moins 6 caractères.");
       return;
     }
 
     setPasswordLoading(true);
     try {
       await authService.changePassword({ currentPassword, newPassword });
-      toast.success("Password changed successfully!");
+      toast.success("Mot de passe modifié avec succès !");
       setCurrentPassword("");
       setNewPassword("");
       setConfirmNewPassword("");
     } catch (error) {
-      toast.error(error.message || "Failed to change passsword");
+      toast.error(error.message || "Échec de la modification du mot de passe");
     } finally {
       setPasswordLoading(false);
     }
@@ -61,30 +61,30 @@ const ProfilePage = () => {
   }
   return (
     <div>
-      <PageHeader title="Profile Setting" />
+      <PageHeader title="Paramètres du profil" />
       <div className="space-y-8">
-        {/* User Information Display */}
+        {/* Affichage des informations utilisateur */}
         <div className="bg-white border border-neutral-200 rounded-lg p-6">
           <h3 className="text-lg font-semibold text-neutral-900 mb-4">
-            User Information
+            Informations utilisateur
           </h3>
           <div className="space-y-4">
             <div>
               <label className="block text-xs font-medium text-neutral-700 mb-1.5">
-                Usename
+                Nom d’utilisateur
               </label>
               <div className="relative">
-                <div className="absolute inset-0 left-0 pl-3 flex items-center pointer-events-none">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <User className="h-4 w-4 text-neutral-400" />
                 </div>
-                <p className="w-full h-9 pl-9 pr-9 border border-neutral-200 rounded-lg bg-neutral-50 text-sm text-neutral-900">
+                <p className="w-full h-9 pl-9 pr-9 flex items-center border border-neutral-200 rounded-lg bg-neutral-50 text-sm text-neutral-900">
                   {username}
                 </p>
               </div>
             </div>
             <div>
               <label className="block text-xs font-medium text-neutral-700 mb-1.5">
-                Email Address
+                Adresse e-mail
               </label>
               <div className="relative">
                 <div className="absolute inset-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -98,16 +98,16 @@ const ProfilePage = () => {
           </div>
         </div>
 
-        {/* Change Password From */}
+        {/* Formulaireulaireulaire de modification du mot de passe */}
         <div className="bg-white border border-neutral-200 rounded-lg p-6">
           <h3 className="text-lg font-semibold text-neutral-900 mb-4">
-            Change Password
+            Modifier le mot de passe
           </h3>
           <form onSubmit={handleChangePassword} className="space-y-4">
             <div>
               <label className="block text-xs font-medium text-neutral-700 mb-1.5">
                 {" "}
-                Current Password{" "}
+                Mot de passe actuel{" "}
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -118,17 +118,17 @@ const ProfilePage = () => {
                   value={currentPassword}
                   onChange={(e) => setCurrentPassword(e.target.value)}
                   required
-                  className="w-full h-9 pl-9 pr-3 border border-neutral-200 rounded-lg bg-white text-sm text-neutral-900 placeholder-neutral-400 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-[#00d492] focus:border-transparent"
+                  className="w-full h-9 pl-9 pr-9 border border-neutral-200 rounded-lg bg-white text-sm text-neutral-900 placeholder-neutral-400 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-[#00d492] focus:border-transparent"
                 />
                 <button
                   type="button"
                   onClick={() => setShowCurrentPassword((visible) => !visible)}
                   aria-label={
                     showCurrentPassword
-                      ? "Hide current password"
-                      : "Show current password"
+                      ? "Masquer le mot de passe actuel"
+                      : "Afficher le mot de passe actuel"
                   }
-                  className="absolute inset-y-0 right-0 flex items-center pr-3 text-neutral-400 transition-colors hover:text-emerald-500 focus:outline-none focus:text-emerald-500"
+                  className="absolute inset-y-0 right-0 z-10 flex items-center pr-3 text-neutral-400 transition-colors hover:text-emerald-500 focus:outline-none focus:text-emerald-500"
                 >
                   {showCurrentPassword ? (
                     <EyeOff className="h-4 w-4" />
@@ -141,7 +141,7 @@ const ProfilePage = () => {
 
             <div>
               <label className="block text-xs font-medium text-neutral-700 mb-1.5">
-                New Password
+                Nouveau mot de passe
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -152,17 +152,17 @@ const ProfilePage = () => {
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
                   required
-                  className="w-full h-9 pl-9 pr-3 border border-neutral-200 rounded-lg bg-white text-sm text-neutral-900 placeholder-neutral-400 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-[#00d492] focus:border-transparent"
+                  className="w-full h-9 pl-9 pr-9 border border-neutral-200 rounded-lg bg-white text-sm text-neutral-900 placeholder-neutral-400 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-[#00d492] focus:border-transparent"
                 />
                 <button
                   type="button"
                   onClick={() => setShowNewPassword((visible) => !visible)}
                   aria-label={
                     showNewPassword
-                      ? "Hide new password"
-                      : "Show new password"
+                      ? "Masquer le nouveau mot de passe"
+                      : "Afficher le nouveau mot de passe"
                   }
-                  className="absolute inset-y-0 right-0 flex items-center pr-3 text-neutral-400 transition-colors hover:text-emerald-500 focus:outline-none focus:text-emerald-500"
+                  className="absolute inset-y-0 right-0 z-10 flex items-center pr-3 text-neutral-400 transition-colors hover:text-emerald-500 focus:outline-none focus:text-emerald-500"
                 >
                   {showNewPassword ? (
                     <EyeOff className="h-4 w-4" />
@@ -175,7 +175,7 @@ const ProfilePage = () => {
 
             <div>
               <label className="block text-xs font-medium text-neutral-700 mb-1.5">
-                Confirm New Password
+                Confirmer le nouveau mot de passe
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -186,7 +186,7 @@ const ProfilePage = () => {
                   value={confirmNewPassword}
                   onChange={(e) => setConfirmNewPassword(e.target.value)}
                   required
-                  className="w-full h-9 pl-9 pr-3 border border-neutral-200 rounded-lg bg-white text-sm text-neutral-900 placeholder-neutral-400 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-[#00d492] focus:border-transparent"
+                  className="w-full h-9 pl-9 pr-9 border border-neutral-200 rounded-lg bg-white text-sm text-neutral-900 placeholder-neutral-400 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-[#00d492] focus:border-transparent"
                 />
                 <button
                   type="button"
@@ -195,10 +195,10 @@ const ProfilePage = () => {
                   }
                   aria-label={
                     showConfirmNewPassword
-                      ? "Hide password confirmation"
-                      : "Show password confirmation"
+                      ? "Masquer la confirmation du mot de passe"
+                      : "Afficher la confirmation du mot de passe"
                   }
-                  className="absolute inset-y-0 right-0 flex items-center pr-3 text-neutral-400 transition-colors hover:text-emerald-500 focus:outline-none focus:text-emerald-500"
+                  className="absolute inset-y-0 right-0 z-10 flex items-center pr-3 text-neutral-400 transition-colors hover:text-emerald-500 focus:outline-none focus:text-emerald-500"
                 >
                   {showConfirmNewPassword ? (
                     <EyeOff className="h-4 w-4" />
@@ -210,7 +210,7 @@ const ProfilePage = () => {
             </div>
             <div className="flex justify-end">
               <Button type="submit" disabled={passwordLoading}>
-                {passwordLoading ? "Changing..." : "Change Password"}
+                {passwordLoading ? "Modification..." : "Modifier le mot de passe"}
               </Button>
             </div>
           </form>

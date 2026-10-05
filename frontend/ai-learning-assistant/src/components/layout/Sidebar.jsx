@@ -21,10 +21,10 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
   };
 
   const navLinks = [
-    { to: "/dashboard", icon: LayoutDashboard, text: "Dashboard" },
+    { to: "/dashboard", icon: LayoutDashboard, text: "Tableau de bord" },
     { to: "/documents", icon: FileText, text: "Documents" },
-    { to: "/flashcards", icon: BookOpen, text: "Flashcards" },
-    { to: "/profile", icon: User, text: "Profile" },
+    { to: "/flashcards", icon: BookOpen, text: "Fiches de révision" },
+    { to: "/profile", icon: User, text: "Profil" },
   ];
 
   return (
@@ -37,7 +37,7 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
       <aside
         className={`fixed top-0 left-0 h-full w-64 bg-white/90 backdrop-blur-lg border-r border-slate-200/60 z-50 md:relative md:w-64 md:shrink-0 md:flex md:flex-col md:translate-x-0 transition-transform duration-300 ease-in-out ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"} `}
       >
-        {/* Logo and Close button for mobile */}
+        {/* Logo et bouton de fermeture sur mobile */}
         <div className="flex items-center justify-center h-16 px-5 border-b border-slate-200/60">
           <div className="flex items-center gap-3">
             <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-linear-to-b from-emerald-400 to-teal-500 shadow-md shadow-emerald-500/20">
@@ -47,8 +47,8 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
                 strokeWidth={2.5}
               />
             </div>
-            <h1 className="text-sm md:text-base font-bold text-slate-900 tracking-tight">
-              AI Learning Assistant
+            <h1 className="text-sm md:text-base font-bold text-slate-900 tracking-tight whitespace-nowrap">
+              Assistant IA
             </h1>
           </div>
           <button
@@ -84,7 +84,7 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
           ))}
         </nav>
 
-        {/* Logout Section */}
+        {/* Section de déconnexion */}
         <div className="px-3 py-4 border-t border-slate-200/60">
           <button
             onClick={handleLogout}
@@ -95,7 +95,7 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
               strokeWidth={2.5}
               className="transition-transform duration-200 group-hover:scale-110"
             />
-            Logout
+            Déconnexion
           </button>
         </div>
       </aside>

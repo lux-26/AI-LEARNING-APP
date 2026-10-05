@@ -25,7 +25,7 @@ const App = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen">
-        <p>Loading...</p>
+        <p>Chargement...</p>
       </div>
     );
   }
@@ -45,7 +45,7 @@ const App = () => {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
 
-        {/* Route Protege  */}
+        {/* Route protégée  */}
         <Route element={<ProtectedRoute />}>
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/documents" element={<DocumentListPage />} />
