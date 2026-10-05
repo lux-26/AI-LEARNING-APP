@@ -8,7 +8,7 @@ const flashcardSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-    // Référence vers le document source (Correction de 'docummentId' et de la syntaxe du type)
+    // Référence vers le document source (Correction de « docummentId » et de la syntaxe du type)
     documentId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Document",

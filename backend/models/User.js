@@ -6,22 +6,22 @@ const userSchema = new mongoose.Schema(
   {
     username: {
       type: String,
-      required: [true, "Please provide a username"],
+      required: [true, "Veuillez fournir un nom d'utilisateur"],
       unique: true,
       trim: true, // Supprime les espaces inutiles au début et à la fin
-      minlength: [3, "Username must be at least 3 characters long"],
+      minlength: [3, "Le nom d'utilisateur doit comporter au moins 3 caractères"],
     },
     email: {
       type: String,
-      required: [true, "Please provide an email"],
+      required: [true, "Veuillez fournir une adresse e-mail"],
       unique: true,
       lowercase: true, // Convertit automatiquement l'email en minuscules
-      match: [/^\S+@\S+\.\S+$/, "Please provide a valid email"], // Expression régulière pour valider le format de l'email
+      match: [/^\S+@\S+\.\S+$/, "Veuillez fournir une adresse e-mail valide"], // Expression régulière pour valider le format de l'email
     },
     password: {
       type: String,
-      required: [true, "Please provide a password "],
-      minlength: [6, "Password must be at least 6 characters long"],
+      required: [true, "Veuillez fournir un mot de passe"],
+      minlength: [6, "Le mot de passe doit comporter au moins 6 caractères"],
       select: false, // Empêche de renvoyer le mot de passe par défaut lors des requêtes de recherche (find)
     },
     profileImage: {

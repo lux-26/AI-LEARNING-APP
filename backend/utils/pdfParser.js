@@ -11,7 +11,7 @@ export const extractTextFromPDF = async (filePath) => {
     // 1. Lit le fichier PDF sur le disque sous forme de tampon (Buffer) de manière asynchrone
     const dataBuffer = await fs.readFile(filePath);
 
-    // pdf-parsse expects a Uint8Array, not a Buffer
+    // pdf-parse attend un Uint8Array et non un Buffer
     const parser = new PDFParse(new Uint8Array(dataBuffer));
 
     // 2. Passe le tampon à la bibliothèque pdf-parse pour extraire les données du document

@@ -6,16 +6,16 @@ import fs from "fs/promises";
 import mongoose from "mongoose";
 import { extractTextFromPDF } from "../utils/pdfParser.js";
 
-// @desc   upload PDF document
-// @route   POST /api/doucements/upload
-// @access  Private
+// @desc   importer un document PDF
+// @route   POST /api/documents/upload
+// @access  Privée
 
 export const uploadDocument = async (req, res, next) => {
   try {
     if (!req.file) {
       return res.status(400).json({
         success: false,
-        error: "Please upload a PDF file",
+        error: "Veuillez importer un fichier PDF",
         statusCode: 400,
       });
     }
@@ -23,20 +23,20 @@ export const uploadDocument = async (req, res, next) => {
     const { title } = req.body;
 
     if (!title) {
-      // Delete uploaded file if no title privide
+      // Supprimer le fichier importé si aucun titre n’est fourni
       await fs.unlink(req.file.path);
       return res.status(400).json({
         success: false,
-        error: "Please provide a document title",
+        error: "Veuillez saisir un titre de document",
         statusCode: 400,
       });
     }
 
-    // Construct the URL for the uploaded file
+    // Construire l’URL du fichier importé
     const baseUrl = `http://localhost:${process.env.PORT || 8000}`;
     const fileUrl = `${baseUrl}/uploads/documents/${req.file.filename}`;
 
-    // Create document record
+    // Créer l’enregistrement du document
     const document = await Document.create({
       userId: req.user._id,
       title,
@@ -46,7 +46,7 @@ export const uploadDocument = async (req, res, next) => {
       status: "processing",
     });
 
-    // Process PDF in background (in production, use a queue like Bull)
+    // Traiter le PDF en arrière-plan (en production, utiliser une file comme Bull)
     processPDF(document._id, req.file.path).catch((err) => {
       console.error("PDF processing error:", err);
     });
@@ -54,10 +54,10 @@ export const uploadDocument = async (req, res, next) => {
     res.status(201).json({
       success: true,
       data: document,
-      message: "Document uploaded successfully. Processing in progress...",
+      message: "Document importé avec succès. Traitement en cours...",
     });
   } catch (error) {
-    // Clean up file on error
+    // Nettoyer le fichier en cas d’erreur
     if (req.file) {
       await fs.unlink(req.file.path).catch(() => {});
     }
@@ -65,15 +65,15 @@ export const uploadDocument = async (req, res, next) => {
   }
 };
 
-// Helper function to process PDF
+// Fonction utilitaire pour traiter le PDF
 const processPDF = async (documentId, filePath) => {
   try {
     const { text } = await extractTextFromPDF(filePath);
 
-    // Create chunks
+    // Créere chunks
     const chunks = chunkText(text, 500, 50);
 
-    //Update document
+    //Mettre à jour le document
     await Document.findByIdAndUpdate(documentId, {
       extractedText: text,
       chunks: chunks,
@@ -88,9 +88,9 @@ const processPDF = async (documentId, filePath) => {
   }
 };
 
-// @desc    Get all user documents
+// @desc    Récupérer tous les documents de l’utilisateur
 // @route   GET /api/documents
-// @access   Private
+// @access  Privée
 export const getDocuments = async (req, res, next) => {
   try {
     const documents = await Document.aggregate([
@@ -142,9 +142,9 @@ export const getDocuments = async (req, res, next) => {
   }
 };
 
-// @desc    Get single document with chunks
+// @desc    Récupérer un document avec ses segments
 // @route   GET /api/documents/:id
-// @access   Private
+// @access  Privée
 export const getDocument = async (req, res, next) => {
   try {
     const document = await Document.findOne({
@@ -155,12 +155,12 @@ export const getDocument = async (req, res, next) => {
     if (!document) {
       return res.status(404).json({
         success: false,
-        error: "Document not found",
+        error: "Document introuvable",
         statusCode: 404,
       });
     }
 
-    // Get counts of associated flashcards and quizzes
+    // Récupérer le nombre de fiches et de quiz associés
     const flashcardCount = await Flashcard.countDocuments({
       documentId: document._id,
       userId: req.user._id,
@@ -170,11 +170,11 @@ export const getDocument = async (req, res, next) => {
       userId: req.user._id,
     });
 
-    //Update last accessed
+    //Mettre à jour la dernière consultation
     document.lastAccessed = Date.now();
     await document.save();
 
-    // Combine document data with counts
+    // Combiner les données du document avec les compteurs
     const documentData = document.toObject();
     documentData.flashcardCount = flashcardCount;
     documentData.quizCount = quizCount;
@@ -188,9 +188,9 @@ export const getDocument = async (req, res, next) => {
   }
 };
 
-// @desc    Delete document with chunks
+// @desc    Supprimer le document et ses segments
 // @route   DELETE /api/documents/:id
-// @access   Private
+// @access  Privée
 export const deleteDocument = async (req, res, next) => {
   try {
     const document = await Document.findOne({
@@ -201,20 +201,20 @@ export const deleteDocument = async (req, res, next) => {
     if (!document) {
       return res.status(404).json({
         success: false,
-        error: "Document not found",
+        error: "Document introuvable",
         statusCode: 404,
       });
     }
 
-    // Delete file from filesystem
+    // Supprimer le fichier du système de fichiers
     await fs.unlink(document.filePath).catch(() => {});
 
-    // Delete document
-    await document.delete();
+    // Supprimer document
+    await document.deleteOne();
 
     res.status(200).json({
       success: true,
-      message: "Document deleted successfully",
+      message: "Document supprimé avec succès",
     });
   } catch (error) {
     next(error);

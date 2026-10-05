@@ -11,7 +11,7 @@ import upload from "../config/multer.js";
 
 const router = Router();
 
-// All routes are protected
+// Toutes les routes sont protégées
 router.use(protect);
 
 router.post("/upload", upload.single("file"), uploadDocument);

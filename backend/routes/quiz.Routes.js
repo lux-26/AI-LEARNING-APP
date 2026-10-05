@@ -10,7 +10,7 @@ import protect from "../middleware/auth.js";
 
 const router = express.Router();
 
-// All routes are protected
+// Toutes les routes sont protégées
 router.use(protect);
 
 router.get("/:documentId", getQuizzes);

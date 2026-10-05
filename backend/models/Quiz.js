@@ -33,7 +33,7 @@ const quizSchema = new mongoose.Schema(
           required: true,
           validate: [
             (array) => array.length === 4,
-            "Must have exactly 4 options",
+            "La question doit comporter exactement 4 options",
           ],
         },
         correctAnswer: {

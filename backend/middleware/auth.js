@@ -38,7 +38,7 @@ const protect = async (req, res, next) => {
       if (error.name === "TokenExpiredError") {
         return res.status(401).json({
           success: false,
-          error: "Token has expired",
+          error: "Le jeton a expiré",
           statusCode: 401,
         });
       }
@@ -46,7 +46,7 @@ const protect = async (req, res, next) => {
       // Gestion des autres erreurs de vérification du token (ex: signature invalide)
       return res.status(401).json({
         success: false,
-        error: "Not authorization, token failed",
+        error: "Accès non autorisé : échec du jeton",
         statusCode: 401,
       });
     }
@@ -56,7 +56,7 @@ const protect = async (req, res, next) => {
   if (!token) {
     return res.status(401).json({
       success: false,
-      error: "Not authorization, no token",
+      error: "Accès non autorisé : aucun jeton fourni",
       statusCode: 401,
     });
   }

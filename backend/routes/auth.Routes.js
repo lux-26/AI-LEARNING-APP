@@ -37,10 +37,10 @@ const registerValidation = [
   body("email")
     .isEmail()
     .normalizeEmail()
-    .withMessage("Please provide a valid email"),
+    .withMessage("Veuillez fournir une adresse e-mail valide"),
   body("password")
     .isLength({ min: 6 })
-    .withMessage("Password must be at least 6 characters"),
+    .withMessage("Le mot de passe doit comporter au moins 6 caractères"),
 ];
 
 // Règles de validation pour la connexion
@@ -48,8 +48,8 @@ const loginValidation = [
   body("email")
     .isEmail()
     .normalizeEmail()
-    .withMessage("Please provide a valid email"),
-  body("password").notEmpty().withMessage("Password is required"),
+    .withMessage("Veuillez fournir une adresse e-mail valide"),
+  body("password").notEmpty().withMessage("Le mot de passe est obligatoire"),
 ];
 
 // Routes publiques (le middleware 'validate' est inséré entre les règles et le contrôleur pour bloquer les données invalides)

@@ -53,11 +53,11 @@ app.use("/api/ai", aiRoutes);
 app.use("/api/quizzes", quizRoutes);
 app.use("/api/progress", progressRoutes);
 
-// Middleware de gestion pour les routes introuvables (404 Not Found)
+// Middleware de gestion pour les routes introuvables (404 introuvable)
 app.use((req, res) => {
   res.status(404).json({
     success: false,
-    error: "Route not found",
+    error: "Route introuvable",
     statusCode: 404,
   });
 });
@@ -69,13 +69,13 @@ app.use(errorHandler);
 const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {
   console.log(
-    `Alhamdou lillah ! Server running in ${process.env.NODE_ENV} mode on port ${PORT}`,
+    `Alhamdou lillah ! Serveur exécuté en mode ${process.env.NODE_ENV} sur le port ${PORT}`,
   );
 });
 
-// Gestion de la sécurité : Arrêt propre du serveur en cas d'erreur de promesse non interceptée (unhandled rejection)
+// Gestion de la sécurité : Arrêt propre du serveur en cas d'erreur de promesse non interceptée (promesse rejetée non interceptée)
 process.on("unhandledRejection", (err) => {
-  console.error(`Error: ${err.message}`);
+  console.error(`Erreur : ${err.message}`);
   // Fermeture du serveur avec un code d'erreur (1) pour éviter un état instable
   process.exit(1);
 });

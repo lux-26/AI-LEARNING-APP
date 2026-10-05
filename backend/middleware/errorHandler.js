@@ -2,11 +2,11 @@ const errorHandler = (err, req, res, next) => {
   // Détermination du code de statut HTTP (par défaut 500 si non spécifié)
   let statusCode = err.statusCode || 500;
   // Message d'erreur par défaut
-  let message = err.message || "server Error";
+  let message = err.message || "Erreur serveur";
 
   // Gestion des erreurs Mongoose : ID invalide (CastError)
   if (err.name === "CastError") {
-    message = "Resource not found";
+    message = "Ressource introuvable";
     statusCode = 400;
   }
 
@@ -27,24 +27,24 @@ const errorHandler = (err, req, res, next) => {
 
   // Gestion des erreurs Multer : Dépassement de la taille limite du fichier
   if (err.code === "LIMIT_FILE_SIZE") {
-    message = "File size exceeds the maximum limit of 10MB";
+    message = "La taille du fichier dépasse la limite maximale de 10 Mo";
     statusCode = 400;
   }
 
   // Gestion des erreurs liées aux jetons JWT : Jeton invalide (corrigé de 'Invaled' à 'Invalid')
   if (err.name === "JsonWebTokenError") {
-    message = "Invalid token";
+    message = "Jeton invalide";
     statusCode = 401;
   }
 
   // Gestion des erreurs liées aux jetons JWT : Jeton expiré
   if (err.name === "TokenExpiredError") {
-    message = "Token expired";
+    message = "Jeton expiré";
     statusCode = 401;
   }
 
   // Affichage de la pile d'erreurs (stack trace) dans la console uniquement en mode développement
-  console.error("Error:", {
+  console.error("Erreur :", {
     stack: process.env.NODE_ENV === "development" ? err.stack : undefined,
   });
 
