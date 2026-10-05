@@ -5,9 +5,9 @@ import ChatHistory from "../models/ChatHistory.js";
 import * as geminiService from "../utils/geminiService.js";
 import { findRelevantChunks } from "../utils/textChunker.js";
 
-// @desc     Generate flashcards from document
+// @desc     Générer des fiches à partir du document
 // @route    POST /api/ai/generate-flashcards
-// @access   Private
+// @access  Privée
 export const generateFlashcards = async (req, res, next) => {
   try {
     const { documentId, count = 10 } = req.body;
@@ -15,7 +15,7 @@ export const generateFlashcards = async (req, res, next) => {
     if (!documentId) {
       return res.status(400).json({
         success: false,
-        error: "Please provide documentId",
+        error: "Veuillez fournir l’identifiant du document",
         statusCode: 400,
       });
     }
@@ -29,18 +29,18 @@ export const generateFlashcards = async (req, res, next) => {
     if (!document) {
       return res.status(404).json({
         success: false,
-        error: "Document not found or not ready",
+        error: "Document introuvable ou pas encore prêt",
         statusCode: 404,
       });
     }
 
-    // Generate flashcards using Gemini
+    // Générer des fiches avec Gemini
     const cards = await geminiService.generateFlashcards(
       document.extractedText,
       parseInt(count),
     );
 
-    // Save to database
+    // Enregistrer dans la base de données
     const flashcardSet = await Flashcard.create({
       userId: req.user._id,
       documentId: document._id,
@@ -56,16 +56,16 @@ export const generateFlashcards = async (req, res, next) => {
     res.status(201).json({
       success: true,
       data: flashcardSet,
-      message: "Flashcards generated successfully",
+      message: "Fiches générées avec succès",
     });
   } catch (error) {
     next(error);
   }
 };
 
-// @desc     Generate quiz from document
+// @desc     Générer un quiz à partir du document
 // @route    POST /api/ai/generate-quiz
-// @access   Private
+// @access  Privée
 export const generateQuiz = async (req, res, next) => {
   try {
     const { documentId, numQuestions = 5, title } = req.body;
@@ -73,7 +73,7 @@ export const generateQuiz = async (req, res, next) => {
     if (!documentId) {
       return res.status(404).json({
         success: false,
-        error: "Please provide documentId",
+        error: "Veuillez fournir l’identifiant du document",
         statusCode: 400,
       });
     }
@@ -87,18 +87,18 @@ export const generateQuiz = async (req, res, next) => {
     if (!document) {
       return res.status(400).json({
         success: false,
-        error: "Document not found or not ready",
+        error: "Document introuvable ou pas encore prêt",
         statusCode: 404,
       });
     }
 
-    // Generate quiz using Gemini
+    // Générer un quiz avec Gemini
     const questions = await geminiService.generateQuiz(
       document.extractedText,
       parseInt(numQuestions),
     );
 
-    // Save to database
+    // Enregistrer dans la base de données
     const quiz = await Quiz.create({
       userId: req.user._id,
       documentId: document._id,
@@ -112,16 +112,16 @@ export const generateQuiz = async (req, res, next) => {
     res.status(201).json({
       success: true,
       data: quiz,
-      message: "Quiz generated successfully",
+      message: "Quiz généré avec succès",
     });
   } catch (error) {
     next(error);
   }
 };
 
-// @desc     Generate document summary
+// @desc     Générer le résumé du document
 // @route    POST /api/ai/generate-summary
-// @access   Private
+// @access  Privée
 export const generateSummary = async (req, res, next) => {
   try {
     const { documentId } = req.body;
@@ -129,7 +129,7 @@ export const generateSummary = async (req, res, next) => {
     if (!documentId) {
       return res.status(400).json({
         success: false,
-        error: "Please provide documentId",
+        error: "Veuillez fournir l’identifiant du document",
         statusCode: 400,
       });
     }
@@ -143,12 +143,12 @@ export const generateSummary = async (req, res, next) => {
     if (!document) {
       return res.status(404).json({
         success: false,
-        error: "Document not found or not ready",
+        error: "Document introuvable ou pas encore prêt",
         statusCode: 404,
       });
     }
 
-    // Generate summary using Gemini
+    // Générer le résumé avec Gemini
     const summary = await geminiService.generateSummary(document.extractedText);
 
     res.status(200).json({
@@ -158,16 +158,16 @@ export const generateSummary = async (req, res, next) => {
         title: document.title,
         summary,
       },
-      message: "Summary generated successfully",
+      message: "Résumé généré avec succès",
     });
   } catch (error) {
     next(error);
   }
 };
 
-// @desc     Chat with document
+// @desc     Discuter avec le document
 // @route    POST /api/ai/Chat
-// @access   Private
+// @access  Privée
 export const chat = async (req, res, next) => {
   try {
     const { documentId, question } = req.body;
@@ -175,7 +175,7 @@ export const chat = async (req, res, next) => {
     if (!documentId || !question) {
       return res.status(400).json({
         success: false,
-        error: "Please provide documentId and question",
+        error: "Veuillez fournir l’identifiant du document et la question",
         statusCode: 400,
       });
     }
@@ -188,16 +188,16 @@ export const chat = async (req, res, next) => {
     if (!document) {
       return res.status(404).json({
         success: false,
-        error: "Document not found or not ready",
+        error: "Document introuvable ou pas encore prêt",
         statusCode: 404,
       });
     }
 
-    // Find relevant chunks
+    // Rechercher les segments pertinents
     const relevantChunks = findRelevantChunks(document.chunks, question, 3);
     const chunksIndices = relevantChunks.map((c) => c.chunkIndex);
 
-    // Get or create chat history
+    // Récupérer ou créer l’historique de discussion
     let chatHistory = await ChatHistory.findOne({
       userId: req.user._id,
       documentId: document._id,
@@ -211,13 +211,13 @@ export const chat = async (req, res, next) => {
       });
     }
 
-    // Generate response using Gemini
+    // Générer la réponse avec Gemini
     const answer = await geminiService.chatWithContext(
       question,
       relevantChunks,
     );
 
-    // Save conversation
+    // Enregistrer la conversation
     chatHistory.messages.push(
       {
         role: "user",
@@ -243,16 +243,16 @@ export const chat = async (req, res, next) => {
         relevantChunks: chunksIndices,
         chatHistoryId: chatHistory._id,
       },
-      message: "Response generated successfully",
+      message: "Réponse générée avec succès",
     });
   } catch (error) {
     next(error);
   }
 };
 
-// @desc    Explain concept from document
+// @desc    Expliquer un concept du document
 // @route    POST /api/ai/explain-concept
-// @access   Private
+// @access  Privée
 export const explainConcept = async (req, res, next) => {
   try {
     const { documentId, concept } = req.body;
@@ -260,7 +260,7 @@ export const explainConcept = async (req, res, next) => {
     if (!documentId || !concept) {
       return res.status(400).json({
         success: false,
-        error: "Please provide documentID and concept",
+        error: "Veuillez fournir l’identifiant du document et le concept",
         statusCode: 400,
       });
     }
@@ -274,16 +274,16 @@ export const explainConcept = async (req, res, next) => {
     if (!document) {
       return res.status(404).json({
         success: false,
-        error: "Document not found or not ready",
+        error: "Document introuvable ou pas encore prêt",
         statusCode: 404,
       });
     }
 
-    // Find relevant chunks for the concept
+    // Rechercher les segments pertinents for the concept
     const relevantChunks = findRelevantChunks(document.chunks, concept, 3);
     const context = relevantChunks.map((c) => c.content).join("\n\n");
 
-    // Generate explanation using Gemini
+    // Générer l’explication avec Gemini
     const explanation = await geminiService.explainConcept(concept, context);
 
     res.status(200).json({
@@ -293,16 +293,16 @@ export const explainConcept = async (req, res, next) => {
         explanation,
         relevantChunks: relevantChunks.map((c) => c.chunkIndex),
       },
-      message: "Explanation generated successfully",
+      message: "Explication générée avec succès",
     });
   } catch (error) {
     next(error);
   }
 };
 
-// @desc     Get chat history for a document
+// @desc     Récupérer l’historique de discussion d’un document
 // @route    GET /api/ai/chat-history/:documentId
-// @access   Private
+// @access  Privée
 export const getChatHistory = async (req, res, next) => {
   try {
     const { documentId } = req.params;
@@ -310,7 +310,7 @@ export const getChatHistory = async (req, res, next) => {
     if (!documentId) {
       return res.status(400).json({
         success: false,
-        error: "Please provide documentId",
+        error: "Veuillez fournir l’identifiant du document",
         statusCode: 400,
       });
     }
@@ -318,20 +318,20 @@ export const getChatHistory = async (req, res, next) => {
     const chatHistory = await ChatHistory.findOne({
       userId: req.user._id,
       documentId: documentId,
-    }).select("messages"); // Only retrieve the message array
+    }).select("messages"); // Récupérer uniquement le tableau des messages
 
     if (!chatHistory) {
       return res.status(200).json({
         success: true,
-        data: [], // Return an empty array if no chat history found
-        message: "No chat history found for this document",
+        data: [], // Retourner un tableau vide si aucun historique de discussion n’est trouvé
+        message: "Aucun historique de discussion pour ce document",
       });
     }
 
     res.status(200).json({
       success: true,
       data: chatHistory.messages,
-      message: "Chat history retrieved successfully",
+      message: "Historique de discussion récupéré avec succès",
     });
   } catch (error) {
     next(error);

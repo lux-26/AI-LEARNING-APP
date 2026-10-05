@@ -7,28 +7,29 @@ const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 if (!process.env.GEMINI_API_KEY) {
   console.error(
-    "FATAL ERROR: GEMINI_API_KEY is not set in the environment variables.",
+    "ERREUR FATALE : GEMINI_API_KEY n’est pas définie dans les variables d’environnement.",
   );
   process.exit(1);
 }
 
 /**
- * Generate flashcards from text
- * @param {string} text - Document text
- * @param {number} count - Number of flashcards to generate
+ * Générer des fiches à partir d’un texte
+ * @param {string} text - Texte du document
+ * @param {number} count - Nombre de fiches à générer
  * @param {Promise<Array<{question: string, answer: string, difficulty: string}>>}
  */
 
 export const generateFlashcards = async (text, count = 10) => {
-  const prompt = `Generate exactly ${count} educational flashcards from the following text.
-  Format each flashcard as:
-  Q: [Clear, specific question]
-  A: [Concise, accurate answer]
-  D: [Difficulty level: easy, medium, or hard]
+  const prompt = `Génère exactement ${count} fiches pédagogiques en français à partir du texte suivant.
+  Les questions, les réponses et les explications doivent être entièrement rédigées en français.
+  Format de chaque fiche :
+  Q: [Question claire et précise en français]
+  A: [Réponse concise et exacte en français]
+  D: [Niveau de difficulté : easy, medium ou hard]
   
   Separate each flashcard with "---"
   
-  Text:
+  Texte :
   ${text.substring(0, 15000)}`;
 
   try {
@@ -39,7 +40,7 @@ export const generateFlashcards = async (text, count = 10) => {
 
     const generatedText = response.text;
 
-    //Parse the response
+    //Analyser la réponse
     const flashcards = [];
     const cards = generatedText.split("---").filter((c) => c.trim());
 
@@ -70,32 +71,33 @@ export const generateFlashcards = async (text, count = 10) => {
     return flashcards.slice(0, count);
   } catch (error) {
     console.error("Gemini API error:", error);
-    throw new Error("Failed to generate flashcards");
+    throw new Error("Échec de la génération des fiches");
   }
 };
 
 /**
- * Generate quiz questions
- * @param {string} text - DOcument text
- * @param {number} numQuestions - Number of questions
+ * Générer des questions de quiz
+ * @param {string} text - Texte du document
+ * @param {number} numQuestions - Nombre de questions
  * @return {Promise<Array<{question: string, options: Array, correctAnswer: string, explanation: string, difficulty: string}>>}
  */
 
 export const generateQuiz = async (text, numQuestions = 5) => {
-  const prompt = `Generate exactly ${numQuestions} multiple choice questions from the following text.
-  Format each question as:
-  Q: [Question]
-  O1: [Option 1]
-  O2: [Option 2]
-  O3: [Option 3]
-  O4: [Option 4]
-  C: [Correct option - exactly as written above]
-  E: [Brief explanation]
-  D: [Difficulty: easy, medium, or hard]
+  const prompt = `Génère exactement ${numQuestions} questions à choix multiple en français à partir du texte suivant.
+  Les questions, les options et les explications doivent être entièrement rédigées en français.
+  Format de chaque question :
+  Q: [Question claire et précise en français]
+  O1: [Option 1 en français]
+  O2: [Option 2 en français]
+  O3: [Option 3 en français]
+  O4: [Option 4 en français]
+  C: [Bonne réponse, exactement comme écrite ci-dessus]
+  E: [Brève explication en français]
+  D: [Niveau de difficulté : easy, medium ou hard]
   
   Separate questions with "---"
   
-  Text:
+  Texte :
   ${text.substring(0, 15000)}`;
 
   try {
@@ -149,19 +151,19 @@ export const generateQuiz = async (text, numQuestions = 5) => {
     return questions.slice(0, numQuestions);
   } catch (error) {
     console.error("gemini API error:", error);
-    throw new Error("Failed to generate quiz");
+    throw new Error("Échec de la génération du quiz");
   }
 };
 
 /**
- * @param {string} text - Document text
+ * @param {string} text - Texte du document
  * @returns {Promise<string>}
  */
 export const generateSummary = async (text) => {
-  const prompt = `Provide a concise summary of the following text, highlighting the key concepts, main ideas and important points.
-  Keep the summary clear and structured.
+  const prompt = `Rédige un résumé concis en français du texte suivant, en mettant en évidence les concepts clés, les idées principales et les points importants.
+  Le résumé doit être clair et structuré.
 
-  Text:
+  Texte :
   ${text.substring(0, 20000)}`;
 
   try {
@@ -173,14 +175,14 @@ export const generateSummary = async (text) => {
     return generatedText;
   } catch (error) {
     console.error("Gemini API error:", error);
-    throw new Error("Failed to generate summary");
+    throw new Error("Échec de la génération du résumé");
   }
 };
 
 /**
- * Chat with document context
- * @param {string} question - User question
- * @param {Array<Object>} chunks - Relevant document chuncks
+ * Discuter avec le contexte du document
+ * @param {string} question - Question de l’utilisateur
+ * @param {Array<Object>} chunks - Segments pertinents du document
  * @returns {Promise<string>}
  */
 export const chatWithContext = async (question, chunks) => {
@@ -188,15 +190,15 @@ export const chatWithContext = async (question, chunks) => {
     .map((c, i) => `[Chunk ${i + 1}]\n${c.content}`)
     .join("\n\n");
 
-  const prompt = `Based on the following context from a document, Analyse the context and answer the user's question
-  If the answer is not in the context, say so.
+  const prompt = `À partir du contexte suivant extrait d’un document, analyse le contexte et réponds à la question de l’utilisateur en français.
+  Si la réponse ne figure pas dans le contexte, indique-le.
   
-  Context:
+  Contexte :
   ${context}
   
-  Question: ${question}
+  Question : ${question}
   
-  Answer:`;
+  Réponse :`;
 
   try {
     const response = await ai.models.generateContent({
@@ -206,23 +208,23 @@ export const chatWithContext = async (question, chunks) => {
     const generatedText = response.text;
     return generatedText;
   } catch (error) {
-    console.error("Gemini Api error:", error);
-    throw new Error("Failed to process chat request");
+    console.error("Erreur de l’API Gemini :", error);
+    throw new Error("Échec du traitement de la demande de discussion");
   }
 };
 
 /**
- * Explain a specific concept
- * @param {string} concept - Concept to explain
- * @param {string} context - Relevant context
+ * Expliquer un concept précis
+ * @param {string} concept - Concept à expliquer
+ * @param {string} context - Contexte pertinent
  * @returns {Promise<string>}
  */
 export const explainConcept = async (concept, context) => {
-  const prompt = `Explain the concept of "${concept}" based on the following context.
-  Provide a clear, educational explanation that's easy to understand.
-  Include example if relevant.
+  const prompt = `Explique le concept de "${concept}" à partir du contexte suivant.
+  Fournis une explication claire et pédagogique, facile à comprendre.
+  Ajoute un exemple si cela est pertinent.
   
-  Context:
+  Contexte :
   ${context.substring(0, 10000)}`;
 
   try {
@@ -234,6 +236,6 @@ export const explainConcept = async (concept, context) => {
     return generatedText;
   } catch (error) {
     console.error("Gemini API error:", error);
-    throw new Error("Failed to explain concept");
+    throw new Error("Échec de l’explication du concept");
   }
 };

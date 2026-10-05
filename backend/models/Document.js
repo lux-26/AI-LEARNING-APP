@@ -11,7 +11,7 @@ const documentSchema = new mongoose.Schema(
     // Titre du document
     title: {
       type: String,
-      required: [true, "Please provide a document title"], // Correction de 'requiired' en 'required'
+      required: [true, "Veuillez saisir un titre de document"], // Correction de « requiired » en 'required'
       trim: true,
     },
     // Nom original du fichier stocké
@@ -29,7 +29,7 @@ const documentSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    // Texte brut extrait du document (utilisé pour la recherche ou l'IA)
+    // Textee brut extrait du document (utilisé pour la recherche ou l'IA)
     extractedText: {
       type: String,
       default: "",
