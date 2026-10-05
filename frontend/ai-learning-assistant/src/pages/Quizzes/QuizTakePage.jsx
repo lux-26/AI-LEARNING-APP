@@ -23,7 +23,7 @@ const QuizTakePage = () => {
         const response = await quizService.getQuizById(quizId);
         setQuiz(response.data);
       } catch (error) {
-        toast.error("Failed to fetch quiz.");
+        toast.error("Échec du chargement du quiz.");
         console.error(error);
       } finally {
         setLoading(false);
@@ -66,10 +66,10 @@ const QuizTakePage = () => {
       );
 
       await quizService.submitQuiz(quizId, formattedAnswers);
-      toast.success("Quiz submitted successfully!");
+      toast.success("Quiz envoyé avec succès !");
       navigate(`/quizzes/${quizId}/results`);
     } catch (error) {
-      toast.error(error.message || "Failed to submit Quiz.");
+      toast.error(error.message || "Échec de l’envoi du quiz.");
     } finally {
       setSubmitting(false);
     }
@@ -88,7 +88,7 @@ const QuizTakePage = () => {
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="text-center">
           <p className="text-slate-600 text-lg">
-            Quiz not found or has no questions.
+            Quiz introuvable ou sans question.
           </p>
         </div>
       </div>
@@ -101,9 +101,9 @@ const QuizTakePage = () => {
 
   return (
     <div className="max-w-4xl mx-auto">
-      <PageHeader title={quiz.title || "Take Quiz"} />
+      <PageHeader title={quiz.title || "Passer le quiz"} />
 
-      {/* Progress Bar */}
+      {/* Barre de progression */}
       <div className="mb-6">
         <div className="flex items-center justify-between mb-2">
           <span className="text-sm font-semibold text-slate-700">
@@ -123,7 +123,7 @@ const QuizTakePage = () => {
         </div>
       </div>
 
-      {/* Question Card */}
+      {/* Carte de question */}
       <div className="bg-white/80 backdrop-blur-xl border-2 border-slate-200 rounded-2xl shadow-xl shadow-slate-200/50 p-6 mb-8">
         <div className="inline-flex items-center gap-2 px-4 py-2 bg-linear-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-xl mb-6">
           <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
@@ -159,7 +159,7 @@ const QuizTakePage = () => {
                   }
                   className="sr-only"
                 />
-                {/* Custom Radio Button */}
+                {/* Bouton radio personnalisé */}
                 <div
                   className={`shrink-0 w-5 h-5 rounded-full border-2 transition-all duration-200 ${isSelected ? "border-emerald-500 bg-emerald-500" : "border-slate-300 bg-white group-hover:border-emerald-400"}`}
                 >
@@ -169,13 +169,13 @@ const QuizTakePage = () => {
                     </div>
                   )}
                 </div>
-                {/* Option Text */}
+                {/* Textee de l’option */}
                 <span
                   className={`ml-4 text-sm font-medium transition-colors duration-200 ${isSelected ? "text-emerald-900" : "text-slate-700 group-hover:text-slate-900"}`}
                 >
                   {option}
                 </span>{" "}
-                {/* Selected Checkmark */}
+                {/* Coche de sélection */}
                 {isSelected && (
                   <CheckCircle2
                     className="ml-auto w-5 h-5 text-emerald-500"
@@ -188,7 +188,7 @@ const QuizTakePage = () => {
         </div>
       </div>
 
-      {/* Navigqtion Buttons */}
+      {/* Boutons de navigation */}
       <div className="flex items-center justify-between gap-4">
         <Button
           onClick={handlePreviousQuestion}
@@ -199,7 +199,7 @@ const QuizTakePage = () => {
             className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform duration-200"
             strokeWidth={2.5}
           />
-          Previous
+          Précédent
         </Button>
 
         {currentQuestionIndex === quiz.questions.length - 1 ? (
@@ -217,7 +217,7 @@ const QuizTakePage = () => {
               ) : (
                 <>
                   <CheckCircle2 className="w-4 h-4" strokeWidth={2.5} />
-                  Submit Quiz
+                  Envoyer le quiz
                 </>
               )}
             </span>
@@ -225,7 +225,7 @@ const QuizTakePage = () => {
           </button>
         ) : (
           <Button onClick={handleNextQuestion} disabled={submitting}>
-            Next
+            Suivant
             <ChevronRight
               className="w-4 h-4 group-hover:translate-x-0.5 transition-transform duration-200"
               strokeWidth={2.5}
@@ -234,7 +234,7 @@ const QuizTakePage = () => {
         )}
       </div>
 
-      {/* Question Navigation Dots */}
+      {/* Points de navigation des questions */}
       <div className="mt-0 flex items-center justify-center gap-2 flex-wrap">
         {quiz.questions.map((_, index) => {
           const isAnsweredQuestion = selectedAnswers.hasOwnProperty(

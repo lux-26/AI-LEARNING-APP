@@ -1,8 +1,8 @@
 import Flashcard from "../models/Flashcard.js";
 
-// @desc     Get all flashcards for a document
+// @desc     Récupérer toutes les fiches d’un document
 // @route     GET  /api/flashcards/:documentId
-// @acces     Private
+// @access     Privée
 
 export const getFlashcards = async (req, res, next) => {
   try {
@@ -23,9 +23,9 @@ export const getFlashcards = async (req, res, next) => {
   }
 };
 
-// @desc     Get all flashcard sets for a user
+// @desc     Récupérer tous les ensembles de fiches d’un utilisateur
 // @route     GET  /api/flashcards
-// @acces     Private
+// @access     Privée
 export const getAllFlashcardSets = async (req, res, next) => {
   try {
     const flashcardSets = await Flashcard.find({
@@ -44,9 +44,9 @@ export const getAllFlashcardSets = async (req, res, next) => {
   }
 };
 
-// @desc   Mark flashcard as reviewed
+// @desc   Marquer une fiche comme révisée
 // @route  POST /api/flashcards/:cardId/review
-// @access  Private
+// @access  Privée
 export const reviewFlashcard = async (req, res, next) => {
   try {
     const flashcardSet = await Flashcard.findOne({
@@ -57,7 +57,7 @@ export const reviewFlashcard = async (req, res, next) => {
     if (!flashcardSet) {
       return res.status(404).json({
         success: false,
-        error: "Flashcard set or card not found",
+        error: "Ensemble de fiches ou fiche introuvable",
         statusCode: 404,
       });
     }
@@ -68,12 +68,12 @@ export const reviewFlashcard = async (req, res, next) => {
     if (cardIndex === -1) {
       return res.status(404).json({
         success: false,
-        error: "Card not found in set",
+        error: "Fiche introuvable dans l’ensemble",
         statusCode: 404,
       });
     }
 
-    // update review info
+    // Mettre à jour les informations de révision
     flashcardSet.cards[cardIndex].lastReviewed = new Date();
     flashcardSet.cards[cardIndex].reviewCount += 1;
 
@@ -82,16 +82,16 @@ export const reviewFlashcard = async (req, res, next) => {
     res.status(200).json({
       success: true,
       data: flashcardSet,
-      message: "Flashcard reviewed successfully",
+      message: "Fiche révisée avec succès",
     });
   } catch (error) {
     next(error);
   }
 };
 
-// @desc     Toggle star/favorite on flashcard
+// @desc     Activer ou désactiver le favori d’une fiche
 // @route    PUT /api/flashcards/:cardId/star
-// @access   private
+// @accesss   privée
 export const toggleStarFlashcard = async (req, res, next) => {
   try {
     const flashcardSet = await Flashcard.findOne({
@@ -102,7 +102,7 @@ export const toggleStarFlashcard = async (req, res, next) => {
     if (!flashcardSet) {
       return res.status(404).json({
         success: false,
-        error: "Flashcard set or card not found",
+        error: "Ensemble de fiches ou fiche introuvable",
         statusCode: 404,
       });
     }
@@ -114,12 +114,12 @@ export const toggleStarFlashcard = async (req, res, next) => {
     if (cardIndex === -1) {
       return res.status(404).json({
         success: false,
-        error: "Card not found in set",
+        error: "Fiche introuvable dans l’ensemble",
         statusCode: 404,
       });
     }
 
-    // Toggle star
+    // Activer ou désactiver le favori
     flashcardSet.cards[cardIndex].isStarred =
       !flashcardSet.cards[cardIndex].isStarred;
 
@@ -128,16 +128,16 @@ export const toggleStarFlashcard = async (req, res, next) => {
     res.status(200).json({
       success: true,
       data: flashcardSet,
-      messsage: `Flashcard ${flashcardSet.cards[cardIndex].isStarred ? "starred" : "unstarred"}`,
+      messsage: `Fiche ${flashcardSet.cards[cardIndex].isStarred ? "ajoutée aux favoris" : "retirée des favoris"}`,
     });
   } catch (error) {
     next(error);
   }
 };
 
-// @desc   Delete flashcard set
+// @desc   Supprimer un ensemble de fiches
 // @route   DELETE /api/flashcards/:id
-// @access   Private
+// @access  Privée
 export const deleteFlashcardSet = async (req, res, next) => {
   try {
     const flashcardSet = await Flashcard.findOne({
@@ -148,7 +148,7 @@ export const deleteFlashcardSet = async (req, res, next) => {
     if (!flashcardSet) {
       return res.status(404).json({
         success: flase,
-        error: "Flashcard set not found",
+        error: "Ensemble de fiches introuvable",
         statusCode: 404,
       });
     }
@@ -157,7 +157,7 @@ export const deleteFlashcardSet = async (req, res, next) => {
 
     res.status(200).json({
       success: true,
-      message: 'Flashcard set deleted successfully'
+      message: 'Ensemble de fiches supprimé avec succès'
     })
   } catch (error) {
     next(error);

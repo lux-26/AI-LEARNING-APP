@@ -96,7 +96,7 @@ export const chunkText = (text, chunkSize = 500, overlap = 50) => {
     });
   }
 
-  // 8. Solution de secours (Fallback) si aucun chunk n'a été créé
+  // 8. Solution de secours (solution de secours) si aucun chunk n'a été créé
   if (chunks.length === 0 && cleanedText.length > 0) {
     const allWords = cleanedText.split(/\s+/);
     for (let i = 0; i < allWords.length; i += step) {
@@ -125,7 +125,7 @@ export const findRelevantChunks = (chunks, query, maxChunks = 3) => {
     return [];
   }
 
-  // Common stop words to exclude
+  // Mots vides courants à exclure
   const stopWods = new Set([
     "the",
     "is",
@@ -149,14 +149,14 @@ export const findRelevantChunks = (chunks, query, maxChunks = 3) => {
     "it",
   ]);
 
-  //Extract and clean query words
+  //Extraire et nettoyer les mots de la requête
   const queryWords = query
     .toLowerCase()
     .split(/\s+/)
     .filter((w) => w.length > 2 && !stopWods.has(w));
 
   if (queryWords.length === 0) {
-    // Return clean chunk objects without Mongoose metadata
+    // Retourner des objets de segment propres, sans métadonnées Mongoose
     return chunks.slice(0, maxChunks).map((chunk) => ({
       content: chunk.content,
       chunkIndex: chunk.chunkIndex,
@@ -170,21 +170,21 @@ export const findRelevantChunks = (chunks, query, maxChunks = 3) => {
     const contentWords = content.split(/\s+/).length;
     let score = 0;
 
-    // Score each query word
+    // Attribuer un score à chaque mot de la requête
     for (const word of queryWords) {
-      // Exact word match (higher score)
+      // Correspondance exacte du mot (score supérieur)
       const exactMatches = (
         content.match(new RegExp(`\\b${word}\\b`, "g")) || []
       ).length;
       score += exactMatches * 3;
 
-      // Partial match (lower score)
+      // Correspondance partielle (score inférieur)
       const partialMatches = (content.match(new RegExp(word, "g")) || [])
         .length;
       score += Math.max(0, partialMatches - exactMatches) * 1.5;
     }
 
-    // Bonus: Multiple query words found
+    // Bonus : plusieurs mots de la requête trouvés
     const uniqueWordsFound = queryWords.filter((word) =>
       content.includes(word),
     ).length;
@@ -192,13 +192,13 @@ export const findRelevantChunks = (chunks, query, maxChunks = 3) => {
       score += uniqueWordsFound * 2;
     }
 
-    // Normalize by content length
+    // Normaliser selon la longueur du contenu
     const normalizedScore = score / Math.sqrt(contentWords);
 
-    // Small bonus for earlier chunks
+    // Petit bonus pour les segments précédents
     const positionBonus = 1 - (index / chunks.length) * 0.1;
 
-    // Return clean object without Mongoose metadata
+    // Retourner un objet propre, sans métadonnées Mongoose
     return {
       content: chunk.content,
       chunkIndex: chunk.chunkIndex,

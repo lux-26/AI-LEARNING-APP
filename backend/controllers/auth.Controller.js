@@ -10,7 +10,7 @@ const GenerateToken = (id) => {
 
 // @desc    Enregistrer un nouvel utilisateur
 // @route   POST /api/auth/register
-// @access  Public
+// @accesss  Public
 export const register = async (req, res, next) => {
   try {
     const { username, email, password } = req.body;
@@ -23,8 +23,8 @@ export const register = async (req, res, next) => {
         success: false,
         error:
           userExists.email === email
-            ? "Email already registered"
-            : "Username already taken",
+            ? "Cette adresse e-mail est déjà enregistrée"
+            : "Ce nom d'utilisateur est déjà utilisé",
         statusCode: 400,
       });
     }
@@ -51,7 +51,7 @@ export const register = async (req, res, next) => {
         },
         token,
       },
-      message: "User registered successfully", // Correction de 'successufully'
+      message: "Utilisateur enregistré avec succès", // Correction de « successufully »
     });
   } catch (error) {
     next(error); // Transmission de l'erreur au middleware global
@@ -60,7 +60,7 @@ export const register = async (req, res, next) => {
 
 // @desc    Connecter un utilisateur existant
 // @route   POST /api/auth/login
-// @access  Public
+// @accesss  Public
 export const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
@@ -69,7 +69,7 @@ export const login = async (req, res, next) => {
     if (!email || !password) {
       return res.status(400).json({
         success: false,
-        error: "Please provide email and password",
+        error: "Veuillez fournir un e-mail et un mot de passe",
         statusCode: 400,
       });
     }
@@ -80,7 +80,7 @@ export const login = async (req, res, next) => {
     if (!user) {
       return res.status(401).json({
         success: false,
-        error: "Invalid credentials",
+        error: "Identifiants invalides",
         statusCode: 401,
       });
     }
@@ -91,7 +91,7 @@ export const login = async (req, res, next) => {
     if (!isMatch) {
       return res.status(401).json({
         success: false,
-        error: "Invalid credentials",
+        error: "Identifiants invalides",
         statusCode: 401,
       });
     }
@@ -108,7 +108,7 @@ export const login = async (req, res, next) => {
         profileImage: user.profileImage,
       },
       token,
-      message: "Login successful",
+      message: "Connexion réussie",
     });
   } catch (error) {
     next(error);
@@ -117,7 +117,7 @@ export const login = async (req, res, next) => {
 
 // @desc    Récupérer le profil de l'utilisateur connecté
 // @route   GET /api/auth/profile
-// @access  Private (nécessite d'être connecté via le middleware 'protect')
+// @access  Privée (nécessite d'être connecté via le middleware 'protect')
 export const getProfile = async (req, res, next) => {
   try {
     // req.user._id est injecté par le middleware 'protect'
@@ -141,7 +141,7 @@ export const getProfile = async (req, res, next) => {
 
 // @desc    Mettre à jour le profil de l'utilisateur
 // @route   PUT /api/auth/profile
-// @access  Private
+// @access  Privée
 export const updateProfile = async (req, res, next) => {
   try {
     const { username, email, profileImage } = req.body;
@@ -163,7 +163,7 @@ export const updateProfile = async (req, res, next) => {
         email: user.email,
         profileImage: user.profileImage,
       },
-      message: "Profile updated successfully",
+      message: "Profil mis à jour avec succès",
     });
   } catch (error) {
     next(error);
@@ -172,7 +172,7 @@ export const updateProfile = async (req, res, next) => {
 
 // @desc    Modifier le mot de passe de l'utilisateur
 // @route   POST /api/auth/change-password
-// @access  Private
+// @access  Privée
 export const changePassword = async (req, res, next) => {
   try {
     const { currentPassword, newPassword } = req.body;
@@ -180,7 +180,7 @@ export const changePassword = async (req, res, next) => {
     if (!currentPassword || !newPassword) {
       return res.status(400).json({
         success: false,
-        error: "Please provide current and new password",
+        error: "Veuillez fournir le mot de passe actuel et le nouveau mot de passe",
         statusCode: 400,
       });
     }
@@ -194,7 +194,7 @@ export const changePassword = async (req, res, next) => {
     if (!isMatch) {
       return res.status(401).json({
         success: false,
-        error: "Current password is incorrect",
+        error: "Le mot de passe actuel est incorrect",
         statusCode: 401,
       });
     }
@@ -205,7 +205,7 @@ export const changePassword = async (req, res, next) => {
 
     res.status(200).json({
       success: true,
-      message: "Password changed successfully",
+      message: "Mot de passe modifié avec succès",
     });
   } catch (error) {
     next(error);

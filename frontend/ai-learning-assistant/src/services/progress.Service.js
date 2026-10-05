@@ -6,7 +6,7 @@ const getDashboardData = async () => {
     const response = await axiosInstance.get(API_PATHS.PROGRESS.GET_DASHBOARD);
     return response.data;
   } catch (error) {
-    throw error.response?.data || { message: "Failed to fetch dashboard data" };
+    throw error.response?.data || { message: "Échec du chargement des données du tableau de bord" };
   }
 };
 
