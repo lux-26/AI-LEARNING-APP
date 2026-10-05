@@ -1,6 +1,12 @@
 import { useState } from "react";
 import { Star, RotateCcw } from "lucide-react";
 
+const DIFFICULTY_LABELS = {
+  easy: "Facile",
+  medium: "Moyen",
+  hard: "Difficile",
+};
+
 const Flashcard = ({flashcard, onToggleStar}) => {
   const [isFlipped, setIsFlipped] = useState(false);
 
@@ -33,7 +39,7 @@ const Flashcard = ({flashcard, onToggleStar}) => {
           {/* Star Button */}
           <div className="flex  items-start justify-between">
             <div className="bg-slate-100 text-[10px] text-slate-600 rounded px-4 py-1 uppercase">
-              {flashcard?.difficulty}
+              {DIFFICULTY_LABELS[flashcard?.difficulty] || "Moyen"}
             </div>
             <button
               onClick={(e) => {
@@ -64,7 +70,7 @@ const Flashcard = ({flashcard, onToggleStar}) => {
           {/* Flip Indicator */}
           <div className="flex items-center justify-center gap-2 text-xs text-slate-400 font-medium">
             <RotateCcw className="w-3.5 h-3.5" strokeWidth={2} />
-            <span>Click to reveal answer</span>
+            <span>            Cliquez pour révéler la réponse</span>
           </div>
         </div>
 
@@ -108,7 +114,7 @@ const Flashcard = ({flashcard, onToggleStar}) => {
           {/* Flip Indicator */}
           <div className="flex items-center justify-center gap-2 text-xs text-white/70 font-medium">
             <RotateCcw className="w-3.5 h-3.5" strokeWidth={2} />
-            <span>Click to see question</span>
+            <span>Cliquez pour voir la question</span>
           </div>
         </div>
       </div>

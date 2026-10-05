@@ -23,7 +23,7 @@ const DocumentDetailPage = () => {
         const data = await documentService.getDocumentById(id);
         setDocument(data);
       } catch (error) {
-        toast.error("Failed to fetch document details.");
+        toast.error("Échec du chargement des détails du document.");
         console.error(error);
       } finally {
         setLoading(false);
@@ -53,7 +53,7 @@ const DocumentDetailPage = () => {
     }
 
     if (!document || !document.data.filePath) {
-      return <div className="text-center p-8">PDF not available</div>;
+      return <div className="text-center p-8">PDF indisponible</div>;
     }
 
     const pdfUrl = getPdfUrl();
@@ -62,7 +62,7 @@ const DocumentDetailPage = () => {
       <div className="bg-white border border-gray-300 rounded-lg overflow-hidden shadow-sm">
         <div className="flex items-center justify-between p-4 bg-gray-50 border-b border-gray-300">
           <span className="text-sm font-medium text-gray-700">
-            Document Viewer
+            Lecteur de document
           </span>
           <a
             href={pdfUrl}
@@ -71,7 +71,7 @@ const DocumentDetailPage = () => {
             className="inline-flex items-center gap-1.5 text-sm text-blue-600 hover:text-blue-700 font-medium transition-colors"
           >
             <ExternalLink size={16} />
-            Open in new tab
+            Ouvrir dans un nouvel onglet
           </a>
         </div>
         <div className="bg-gray-100 p-1">
@@ -92,7 +92,7 @@ const DocumentDetailPage = () => {
   };
 
   const renderAiActions = () => {
-    return <AIActions />;
+    return <AIActions document={document?.data} />;
   };
 
   const renderFlashcardsTab = () => {
@@ -104,11 +104,11 @@ const DocumentDetailPage = () => {
   };
 
   const tabs = [
-    { name: "Content", label: "Content", content: renderContent() },
-    { name: "Chat", label: "Chat", content: renderChat() },
-    { name: "AI Actions", label: "AI Actions", content: renderAiActions() },
-    { name: "Flashcards", label: "Flashcards", content: renderFlashcardsTab() },
-    { name: "Quizzes", label: "Quizzes", content: renderQuizzesTab() },
+    { name: "Content", label: "Contenu", content: renderContent() },
+    { name: "Chat", label: "Discussion", content: renderChat() },
+    { name: "AI Actions", label: "Actions IA", content: renderAiActions() },
+    { name: "Flashcards", label: "Fiches", content: renderFlashcardsTab() },
+    { name: "Quizzes", label: "Quiz", content: renderQuizzesTab() },
   ];
 
   if (loading) {
@@ -116,7 +116,7 @@ const DocumentDetailPage = () => {
   }
 
   if (!document) {
-    return <div className="text-center p-8">Document not found.</div>;
+    return <div className="text-center p-8">Document introuvable.</div>;
   }
 
   return (
@@ -127,7 +127,7 @@ const DocumentDetailPage = () => {
           className="inline-flex items-center gap-2 text-sm text-neutral-600 hover:text-neutral-900 transition-colors"
         >
           <ArrowLeft size={16} />
-          Back to Documents
+          Retour aux documents
         </Link>
       </div>
       <PageHeader title={document.data.title} />

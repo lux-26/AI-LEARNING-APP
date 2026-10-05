@@ -4,6 +4,7 @@ import Quiz from "../models/Quiz.js";
 import ChatHistory from "../models/ChatHistory.js";
 import * as geminiService from "../utils/geminiService.js";
 import { findRelevantChunks } from "../utils/textChunker.js";
+import Notification from "../models/Notification.js";
 
 // @desc     Generate flashcards from document
 // @route    POST /api/ai/generate-flashcards
@@ -51,6 +52,12 @@ export const generateFlashcards = async (req, res, next) => {
         reviewCount: 0,
         isStarred: false,
       })),
+    });
+    await Notification.create({
+      user: req.user._id,
+      title: "Nouvelles fiches générées",
+      message: `Les fiches pour le document ${document.title} sont disponibles.`,
+      type: "flashcards_generated",
     });
 
     res.status(201).json({
@@ -107,6 +114,12 @@ export const generateQuiz = async (req, res, next) => {
       totalQuestions: questions.length,
       userAnswers: [],
       score: 0,
+    });
+    await Notification.create({
+      user: req.user._id,
+      title: "Nouveau quiz généré",
+      message: `Le quiz pour le document ${document.title} est disponible.`,
+      type: "quiz_generated",
     });
 
     res.status(201).json({
@@ -216,7 +229,6 @@ export const chat = async (req, res, next) => {
       question,
       relevantChunks,
     );
-
     // Save conversation
     chatHistory.messages.push(
       {

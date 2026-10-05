@@ -6,7 +6,7 @@ const ProtectedRoute = () => {
   const { isAuthenticated, loading } = useAuth();
 
   if (loading) {
-    return <div className="">Loading...</div>;
+    return <div className="">Chargement...</div>;
   }
   return isAuthenticated ? (
     <AppLayout>

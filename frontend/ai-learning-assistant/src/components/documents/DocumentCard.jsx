@@ -1,7 +1,5 @@
-import React from "react";
 import { useNavigate } from "react-router-dom";
 import { FileText, Trash2, BookOpen, BrainCircuit, Clock } from "lucide-react";
-import moment from "moment";
 
 // Helper function to format file size
 const formatFileSize = (bytes) => {
@@ -17,6 +15,32 @@ const formatFileSize = (bytes) => {
   }
 
   return `${size.toFixed(1)} ${units[unitIndex]}`;
+};
+
+const formatRelativeTimeFr = (dateInput) => {
+  if (!dateInput) return "il y a un instant";
+
+  const date = new Date(dateInput);
+  const now = new Date();
+  const diffInSeconds = Math.floor((now - date) / 1000);
+
+  if (Number.isNaN(diffInSeconds) || diffInSeconds < 10) {
+    return "il y a quelques secondes";
+  }
+  if (diffInSeconds < 60) {
+    return `il y a ${diffInSeconds} secondes`;
+  }
+  if (diffInSeconds < 3600) {
+    const minutes = Math.floor(diffInSeconds / 60);
+    return `il y a ${minutes} minute${minutes > 1 ? "s" : ""}`;
+  }
+  if (diffInSeconds < 86400) {
+    const hours = Math.floor(diffInSeconds / 3600);
+    return `il y a ${hours} heure${hours > 1 ? "s" : ""}`;
+  }
+
+  const days = Math.floor(diffInSeconds / 86400);
+  return `il y a ${days} jour${days > 1 ? "s" : ""}`;
 };
 
 const DocumentCard = ({ document, onDelete }) => {
@@ -71,13 +95,13 @@ const DocumentCard = ({ document, onDelete }) => {
           {document.flashcardCount !== undefined && (
             <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-purple-50 rounded-lg">
               <BookOpen className="w-3.5 h-3.5 text-purple-600" strokeWidth={2} />
-              <span className="text-xs font-semibold text-purple-700">{document.flashcardCount} Flashcards </span>
+              <span className="text-xs font-semibold text-purple-700">{document.flashcardCount} fiches </span>
             </div>
           )}
           {document.quizCount !== undefined && (
             <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-emerald-50 rounded-lg">
               <BrainCircuit className="w-3.5 h-3.5 text-emerald-600" strokeWidth={2} />
-              <span className="text-xs font-semibold text-emerald-700">{document.quizCount} Quizzes</span>
+              <span className="text-xs font-semibold text-emerald-700">{document.quizCount} quiz</span>
             </div>
           )}
         </div>
@@ -87,7 +111,9 @@ const DocumentCard = ({ document, onDelete }) => {
       <div className="mt-5 pt-4 border-t border-slate-100">
         <div className="flex items-center gap-1.5 text-xs text-slate-500">
           <Clock className="w-3.5 h-3.5" strokeWidth={2} />
-          <span>Uploaded {moment(document.createdAt).fromNow()} </span>
+          <span>
+            Importé {formatRelativeTimeFr(document?.createdAt || document?.UploadDate)}
+          </span>
         </div>
       </div>
 

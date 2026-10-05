@@ -1,25 +1,45 @@
-import React from "react";
 import { useNavigate } from "react-router-dom";
 import { BookOpen, Sparkles, TrendingUp } from "lucide-react";
 import moment from "moment";
+import "moment/locale/fr";
 const FlashcardSetCard = ({ flashcardSet }) => {
   const navigate = useNavigate();
 
-  const handleStydyNow = () => {
-    navigate(`/documents/${flashcardSet.documentId._id}/flashcards`);
+  const docId =
+    typeof flashcardSet?.documentId === "object"
+      ? flashcardSet.documentId?._id
+      : flashcardSet?.documentId;
+  const documentData =
+    flashcardSet?.documentId &&
+    typeof flashcardSet.documentId === "object"
+      ? flashcardSet.documentId
+      : null;
+  const displayTitle =
+    flashcardSet?.title ||
+    flashcardSet?.name ||
+    flashcardSet?.topic ||
+    flashcardSet?.documentTitle ||
+    documentData?.title ||
+    "Lot sans titre";
+
+  const handleStudyNow = () => {
+    if (docId) {
+      navigate(`/documents/${docId}/flashcards`);
+    }
   };
 
-  const reviewedCount = flashcardSet.cards.filter(
+  const reviewedCount = (flashcardSet?.cards || []).filter(
     (card) => card.lastReviewed,
   ).length;
-  const totalCards = flashcardSet.cards.length;
+  const totalCards = flashcardSet?.cards?.length || 0;
+  moment.locale("fr");
   const progressPercentage =
     totalCards > 0 ? Math.round((reviewedCount / totalCards) * 100) : 0;
 
   return (
     <div
       className="group relative bg-white/80 backdrop-blur-xl border-2 border-slate-200 hover:border-emerald-300 rounded-2xl p-6 cursor-pointer transition-all duration-200 hover:shadow-lg hover:shadow-emerald-500/10 flex flex-col justify-between"
-      onClick={handleStydyNow}
+      onClick={handleStudyNow}
     >
       <div className="space-y-4">
         {/* Icon and Title  */}.
@@ -30,12 +50,12 @@ const FlashcardSetCard = ({ flashcardSet }) => {
           <div className="flex-1 min-w-0">
             <h3
               className="text-base font-semibold text-slate-900 line-clamp-2 mb-1"
-              title={flashcardSet?.documentId?.title}
+              title={displayTitle}
             >
-              {flashcardSet?.documentId?.title}
+              {displayTitle}
             </h3>
             <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">
-              Created {moment(flashcardSet.createdAt).fromNow()}
+              Créé {moment(flashcardSet?.createdAt).locale("fr").fromNow()}
             </p>
           </div>
         </div>
@@ -43,7 +63,7 @@ const FlashcardSetCard = ({ flashcardSet }) => {
         <div className="flex items-center gap-3 pt-2">
           <div className="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg">
             <span className="text-sm font-semibold text-slate-700">
-              {totalCards} {totalCards === 1 ? "Card" : "Cards"}
+              {totalCards} {totalCards === 1 ? "carte" : "cartes"}
             </span>
           </div>
           {reviewedCount > 0 && (
@@ -63,10 +83,10 @@ const FlashcardSetCard = ({ flashcardSet }) => {
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-xs font-medium text-slate-600">
-                Progress
+                Progression
               </span>
               <span className="text-xs font-semibold text-slate-700">
-                {reviewedCount}/{totalCards} reviewed
+                {reviewedCount}/{totalCards} révisées
               </span>
             </div>
             <div className="relative h-2 bg-slate-100 rounded-full overflow-hidden">
@@ -84,12 +104,13 @@ const FlashcardSetCard = ({ flashcardSet }) => {
         <button
           onClick={(e) => {
             e.stopPropagation();
-            handleStydyNow();
+            handleStudyNow();
           }}
+          disabled={!docId}
           className="group/btn relative w-full h-11 bg-linear-to-r from-emerald-50 to-teal-100 hover:from-emerald-600 hover:to-teal-600 text-emerald-700 hover:text-white font-semibold text-sm rounded-xl transition-all duration-200 active:scale-95 overflow-hidden"
         >
           <span className="relative flex z-10 items-center justify-center gap-2">
-            <Sparkles className="w-4 h-4" strokeWidth={2.5} /> Study Now
+            <Sparkles className="w-4 h-4" strokeWidth={2.5} /> Étudier maintenant
           </span>
           <div className="absolute inset-0 bg-linear-to-r from-white/0 via-white/20 to-white/0 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700" />
         </button>

@@ -1,4 +1,3 @@
-import React from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/authContext.jsx";
 import {
@@ -21,10 +20,10 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
   };
 
   const navLinks = [
-    { to: "/dashboard", icon: LayoutDashboard, text: "Dashboard" },
+    { to: "/dashboard", icon: LayoutDashboard, text: "Tableau de bord" },
     { to: "/documents", icon: FileText, text: "Documents" },
-    { to: "/flashcards", icon: BookOpen, text: "Flashcards" },
-    { to: "/profile", icon: User, text: "Profile" },
+    { to: "/flashcards", icon: BookOpen, text: "Fiches" },
+    { to: "/profile", icon: User, text: "Profil" },
   ];
 
   return (
@@ -48,7 +47,7 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
               />
             </div>
             <h1 className="text-sm md:text-base font-bold text-slate-900 tracking-tight">
-              AI Learning Assistant
+              <span className="whitespace-nowrap">Assistant IA</span>
             </h1>
           </div>
           <button
@@ -95,7 +94,7 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
               strokeWidth={2.5}
               className="transition-transform duration-200 group-hover:scale-110"
             />
-            Logout
+            Déconnexion
           </button>
         </div>
       </aside>

@@ -45,4 +45,9 @@ export const API_PATHS = {
   PROGRESS: {
     GET_DASHBOARD: "/api/progress/dashboard",
   },
+
+  NOTIFICATIONS: {
+    GET_ALL: "/api/notifications",
+    MARK_ALL_READ: "/api/notifications/read-all",
+  },
 };

@@ -13,6 +13,13 @@ import {
 const DashboardPage = () => {
   const [dashboardData, setDashboardData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const formatActivityDate = (value) => {
+    if (!value) return "Date inconnue";
+    const date = new Date(value);
+    return Number.isNaN(date.getTime())
+      ? "Date inconnue"
+      : date.toLocaleString("fr-FR");
+  };
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -22,7 +29,7 @@ const DashboardPage = () => {
 
         setDashboardData(data.data);
       } catch (error) {
-        toast.error("Failed to fetch dashboard data.");
+        toast.error("Échec du chargement du tableau de bord.");
         console.error(error);
       } finally {
         setLoading(false);
@@ -41,7 +48,7 @@ const DashboardPage = () => {
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-slate-100 mb-4">
             <TrendingUp className="w-8 h-8 text-slate-400" />
           </div>
-          <p className="text-slate-600 text-sm">No dashboard data available</p>
+          <p className="text-slate-600 text-sm">Aucune donnée disponible pour le tableau de bord.</p>
         </div>
       </div>
     );
@@ -49,21 +56,21 @@ const DashboardPage = () => {
 
   const stats = [
     {
-      label: "Total Documents",
+      label: "Documents totaux",
       Value: dashboardData.overview.totalDocuments,
       icon: FileText,
       gradient: "from-blue-400 to-cyan-500",
       shadowColor: "shadow-blue-500/25",
     },
     {
-      label: "Total Flashcards",
+      label: "Fiches totales",
       Value: dashboardData.overview.totalFlashcards,
       icon: BookOpen,
       gradient: "from-purple-400 to-pink-500",
       shadowColor: "shadow-purple-500/25",
     },
     {
-      label: "Total Quizzes",
+      label: "Quiz totaux",
       Value: dashboardData.overview.totalQuizzes,
       icon: BrainCircuit,
       gradient: "from-emerald-400 to-teal-500",
@@ -78,10 +85,10 @@ const DashboardPage = () => {
         {/* Header */}
         <div className="mb-6">
           <h1 className="text-2xl font-medium text-slate-900 tracking-tight mb-2 ">
-            Dashboard
+            Tableau de bord
           </h1>
           <p className="text-slate-500 text-sm">
-            Track your learning progress and activity
+            Suivez vos progrès et votre activité d'apprentissage
           </p>
         </div>
 
@@ -116,7 +123,7 @@ const DashboardPage = () => {
               <Clock className="w-5 h-5 text-slate-600" strokeWidth={2} />
             </div>
             <h3 className="text-xl font-medium text-slate-900 tracking-tight">
-              Recent Activity
+              Activité récente
             </h3>
           </div>
 
@@ -137,7 +144,7 @@ const DashboardPage = () => {
                 ...(dashboardData.recentActivity.quizzes || []).map((quiz) => ({
                   id: quiz._id,
                   description: quiz.title,
-                  timestamp: quiz.lastAttempted,
+                  timestamp: quiz.createdAt || quiz.lastAttempted,
                   link: `/quizzes/${quiz._id}`,
                   type: "quiz",
                 })),
@@ -155,25 +162,27 @@ const DashboardPage = () => {
                         />
                         <p className="text-sm font-medium text-slate-900 truncate">
                           {activity.type === "document"
-                            ? "Accessed Document: "
-                            : "Attempted Quiz: "}
+                            ? "Document consulté : "
+                            : "Quiz tenté : "}
                           <span className="text-slate-700">
                             {activity.description}
                           </span>
                         </p>
                       </div>
                       <p className="text-xs text-slate-500 pl-4">
-                        {new Date(activity.timestamp).toLocaleString()}
+                        {formatActivityDate(activity.timestamp)}
                       </p>
                     </div>
-                    {activity.link && (
-                      <a
-                        href={activity.link}
-                        className="ml-4 px-4 py-2 text-xs font-semibold text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg transition-all duration-200 whitespace-nowrap"
-                      >
-                        View
-                      </a>
-                    )}
+                    <div className="ml-4 flex items-center gap-2">
+                      {activity.link && (
+                        <a
+                          href={activity.link}
+                          className="px-4 py-2 text-xs font-semibold text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg transition-all duration-200 whitespace-nowrap"
+                        >
+                          Voir
+                        </a>
+                      )}
+                    </div>
                   </div>
                 ))}
             </div>
@@ -182,9 +191,9 @@ const DashboardPage = () => {
               <div className="inline-flex items-center justify-center w-16 rounded-2xl bg-slate-100 mb-4">
                 <Clock className="w-8 h-8 text-slate-400" />
               </div>
-              <p className="text-sm text-slate-600">No recent activity yet.</p>
+              <p className="text-sm text-slate-600">Aucune activité récente.</p>
               <p className="text-xs text-slate-500 mt-1">
-                Start learning to see your progress here
+                Commencez à apprendre pour voir vos progrès ici.
               </p>
             </div>
           )}

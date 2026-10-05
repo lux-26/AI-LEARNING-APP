@@ -1,4 +1,3 @@
-import React from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -25,7 +24,7 @@ const App = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen">
-        <p>Loading...</p>
+        <p>Chargement...</p>
       </div>
     );
   }

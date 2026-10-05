@@ -5,10 +5,13 @@ import Spinner from "../../components/common/Spinner.jsx";
 import EmptyState from "../../components/common/EmptyState.jsx";
 import FlashcardSetCard from "../../components/flashcards/FlashcardSetCard.jsx";
 import toast from "react-hot-toast";
+import moment from "moment";
+import "moment/locale/fr";
 
 const FlashListPage = () => {
   const [flashcardSets, setFlashcardSets] = useState([]);
   const [loading, setLoadind] = useState(true);
+  moment.locale("fr");
 
   useEffect(() => {
     const fetchFlashcardSets = async () => {
@@ -19,7 +22,7 @@ const FlashListPage = () => {
 
         setFlashcardSets(response.data);
       } catch (error) {
-        toast.error("Failed to fetch flashcard sets.");
+        toast.error("Échec du chargement des lots de fiches.");
         console.error(error);
       } finally {
         setLoadind(false);
@@ -36,8 +39,8 @@ const FlashListPage = () => {
     if (flashcardSets.length === 0) {
       return (
         <EmptyState
-          title="No Flashcard Sets Found"
-          description="ou haven't generated any flashcards yet. Go to a document to create your first set."
+          title="Aucun lot de fiches trouvé"
+          description="Vous n'avez pas encore généré de fiches. Ouvrez un document pour créer votre premier lot."
         />
       );
     }
@@ -52,7 +55,7 @@ const FlashListPage = () => {
   };
   return (
     <div>
-      <PageHeader title="All Flashcard Sets" />
+      <PageHeader title="Tous les lots de fiches" />
       {renderContent()}
     </div>
   );

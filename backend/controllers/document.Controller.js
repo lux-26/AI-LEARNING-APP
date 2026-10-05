@@ -5,6 +5,7 @@ import { chunkText } from "../utils/textChunker.js";
 import fs from "fs/promises";
 import mongoose from "mongoose";
 import { extractTextFromPDF } from "../utils/pdfParser.js";
+import Notification from "../models/Notification.js";
 
 // @desc   upload PDF document
 // @route   POST /api/doucements/upload
@@ -47,7 +48,7 @@ export const uploadDocument = async (req, res, next) => {
     });
 
     // Process PDF in background (in production, use a queue like Bull)
-    processPDF(document._id, req.file.path).catch((err) => {
+    processPDF(document._id, req.file.path, req.user._id).catch((err) => {
       console.error("PDF processing error:", err);
     });
 
@@ -66,7 +67,7 @@ export const uploadDocument = async (req, res, next) => {
 };
 
 // Helper function to process PDF
-const processPDF = async (documentId, filePath) => {
+const processPDF = async (documentId, filePath, userId) => {
   try {
     const { text } = await extractTextFromPDF(filePath);
 
@@ -78,6 +79,13 @@ const processPDF = async (documentId, filePath) => {
       extractedText: text,
       chunks: chunks,
       status: "ready",
+    });
+    const document = await Document.findById(documentId).select("title");
+    await Notification.create({
+      user: userId,
+      title: "Document prêt",
+      message: `Votre document ${document?.title || "sans titre"} a été analysé avec succès.`,
+      type: "document_ready",
     });
     console.log(`Document ${documentId} processed successfully`);
   } catch (error) {

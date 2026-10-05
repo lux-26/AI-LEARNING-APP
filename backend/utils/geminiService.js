@@ -4,6 +4,8 @@ import { GoogleGenAI } from "@google/genai";
 dotenv.config();
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+const FRENCH_LANGUAGE_INSTRUCTION =
+  "Tu es un assistant pédagogique. Réponds STRICTEMENT et EXCLUSIVEMENT en français. Tout le contenu généré (titres, listes, explications, questions, réponses) doit être rédigé en langue française.";
 
 if (!process.env.GEMINI_API_KEY) {
   console.error(
@@ -20,7 +22,9 @@ if (!process.env.GEMINI_API_KEY) {
  */
 
 export const generateFlashcards = async (text, count = 10) => {
-  const prompt = `Generate exactly ${count} educational flashcards from the following text.
+  const prompt = `${FRENCH_LANGUAGE_INSTRUCTION}
+
+Génère exactement ${count} fiches pédagogiques à partir du texte suivant.
   Format each flashcard as:
   Q: [Clear, specific question]
   A: [Concise, accurate answer]
@@ -82,7 +86,9 @@ export const generateFlashcards = async (text, count = 10) => {
  */
 
 export const generateQuiz = async (text, numQuestions = 5) => {
-  const prompt = `Generate exactly ${numQuestions} multiple choice questions from the following text.
+  const prompt = `${FRENCH_LANGUAGE_INSTRUCTION}
+
+Génère exactement ${numQuestions} questions à choix multiples à partir du texte suivant.
   Format each question as:
   Q: [Question]
   O1: [Option 1]
@@ -158,8 +164,10 @@ export const generateQuiz = async (text, numQuestions = 5) => {
  * @returns {Promise<string>}
  */
 export const generateSummary = async (text) => {
-  const prompt = `Provide a concise summary of the following text, highlighting the key concepts, main ideas and important points.
-  Keep the summary clear and structured.
+  const prompt = `${FRENCH_LANGUAGE_INSTRUCTION}
+
+Fournis un résumé concis du texte suivant, en mettant en évidence les concepts clés, les idées principales et les points importants.
+Garde le résumé clair et structuré.
 
   Text:
   ${text.substring(0, 20000)}`;
@@ -188,8 +196,10 @@ export const chatWithContext = async (question, chunks) => {
     .map((c, i) => `[Chunk ${i + 1}]\n${c.content}`)
     .join("\n\n");
 
-  const prompt = `Based on the following context from a document, Analyse the context and answer the user's question
-  If the answer is not in the context, say so.
+  const prompt = `${FRENCH_LANGUAGE_INSTRUCTION}
+
+À partir du contexte suivant, analyse le document et réponds à la question de l'utilisateur.
+Si la réponse ne figure pas dans le contexte, précise-le.
   
   Context:
   ${context}
@@ -218,9 +228,11 @@ export const chatWithContext = async (question, chunks) => {
  * @returns {Promise<string>}
  */
 export const explainConcept = async (concept, context) => {
-  const prompt = `Explain the concept of "${concept}" based on the following context.
-  Provide a clear, educational explanation that's easy to understand.
-  Include example if relevant.
+  const prompt = `${FRENCH_LANGUAGE_INSTRUCTION}
+
+Explique le concept « ${concept} » à partir du contexte suivant.
+Fournis une explication claire, pédagogique et facile à comprendre.
+Ajoute un exemple si cela est pertinent.
   
   Context:
   ${context.substring(0, 10000)}`;

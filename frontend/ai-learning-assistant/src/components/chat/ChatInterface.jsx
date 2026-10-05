@@ -64,7 +64,7 @@ const ChatInterface = () => {
       console.error("Chat error:", error);
       const errorMessage = {
         role: "assistant",
-        content: "Sorry, I encountered an error. Please try again.",
+        content: "Une erreur est survenue. Veuillez réessayer.",
         timestamp: new Date(),
       };
       setHistory((prev) => [...prev, errorMessage]);
@@ -114,7 +114,7 @@ const ChatInterface = () => {
         </div>
         <Spinner />
         <p className="text-sm text-slate-500 mt-3 font-medium">
-          Loading chat history...
+          Chargement de l'historique...
         </p>
       </div>
     );
@@ -133,10 +133,10 @@ const ChatInterface = () => {
               />
             </div>
             <h3 className="text-base font-semibold text-slate-900 mb-2">
-              Start a conversation
+              Démarrer une conversation
             </h3>
             <p className="text-sm text-slate-500">
-              Ask me anything about the document!
+              Posez-moi n'importe quelle question sur le document !
             </p>
           </div>
         ) : (
@@ -175,7 +175,7 @@ const ChatInterface = () => {
             type="text"
             value={message}
             onChange={(e) => setMessage(e.target.value)}
-            placeholder="Ask a follow-up question..."
+            placeholder="Posez une question complémentaire..."
             className="flex-1 h-12 px-4 border-2 border-slate-200 rounded-xl bg-slate-50/50 text-slate-900 placeholder-slate-400 text-sm font-medium transition-all duration-200 focus:outline-none focus:border-emerald-500 focus:bg-white focus:shadow-lg focus:shadow-emerald-500/10"
             disabled={loading}
           />

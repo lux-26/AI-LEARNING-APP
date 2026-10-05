@@ -25,7 +25,7 @@ const ProfilePage = () => {
         setUsername(data.username);
         setEmail(data.email);
       } catch (error) {
-        toast.error("Failed to fetch profile data");
+        toast.error("Échec du chargement des données du profil.");
         console.error(error);
       } finally {
         setLoading(false);
@@ -38,19 +38,19 @@ const ProfilePage = () => {
   const handleChangePassword = async (e) => {
     e.preventDefault();
     if (newPassword !== confirmNewPassword) {
-      toast.error("New password must be at least 6 characters long.");
+      toast.error("Le nouveau mot de passe doit contenir au moins 6 caractères.");
       return;
     }
 
     setPasswordLoading(true);
     try {
       await authService.changePassword({ currentPassword, newPassword });
-      toast.success("Password changed successfully!");
+      toast.success("Mot de passe modifié avec succès !");
       setCurrentPassword("");
       setNewPassword("");
       setConfirmNewPassword("");
     } catch (error) {
-      toast.error(error.message || "Failed to change passsword");
+      toast.error(error.message || "Échec de la modification du mot de passe.");
     } finally {
       setPasswordLoading(false);
     }
@@ -61,36 +61,36 @@ const ProfilePage = () => {
   }
   return (
     <div>
-      <PageHeader title="Profile Setting" />
+      <PageHeader title="Paramètres du profil" />
       <div className="space-y-8">
         {/* User Information Display */}
         <div className="bg-white border border-neutral-200 rounded-lg p-6">
           <h3 className="text-lg font-semibold text-neutral-900 mb-4">
-            User Information
+            Informations utilisateur
           </h3>
           <div className="space-y-4">
-            <div>
-              <label className="block text-xs font-medium text-neutral-700 mb-1.5">
-                Usename
+            {/* Champ Nom d'utilisateur corrigé */}
+            <div className="flex flex-col gap-1.5">
+              <label className="text-sm font-medium text-gray-700">
+                Nom d'utilisateur
               </label>
-              <div className="relative">
-                <div className="absolute inset-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <User className="h-4 w-4 text-neutral-400" />
-                </div>
-                <p className="w-full h-9 pl-9 pr-9 border border-neutral-200 rounded-lg bg-neutral-50 text-sm text-neutral-900">
-                  {username}
-                </p>
+              <div className="relative flex items-center">
+                <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+                <input
+                  type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  className="w-full pl-11 pr-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 text-gray-800"
+                />
               </div>
             </div>
             <div>
               <label className="block text-xs font-medium text-neutral-700 mb-1.5">
-                Email Address
+                Adresse email
               </label>
-              <div className="relative">
-                <div className="absolute inset-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Mail className="h-4 w-4 text-neutral-400" />
-                </div>
-                <p className="w-full h-9 pl-9 pr-3 pt-2 border border-neutral-200 rounded-lg bg-neutral-50 text-sm text-neutral-900">
+              <div className="relative flex items-center w-full">
+                <Mail className="absolute left-3 w-5 h-5 text-neutral-400 pointer-events-none" />
+                <p className="w-full h-9 pl-10 pr-4 border border-neutral-200 rounded-lg bg-neutral-50 text-sm text-neutral-900 leading-normal">
                   {email}
                 </p>
               </div>
@@ -101,13 +101,13 @@ const ProfilePage = () => {
         {/* Change Password From */}
         <div className="bg-white border border-neutral-200 rounded-lg p-6">
           <h3 className="text-lg font-semibold text-neutral-900 mb-4">
-            Change Password
+            Changer le mot de passe
           </h3>
           <form onSubmit={handleChangePassword} className="space-y-4">
             <div>
               <label className="block text-xs font-medium text-neutral-700 mb-1.5">
                 {" "}
-                Current Password{" "}
+                Mot de passe actuel{" "}
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -125,8 +125,8 @@ const ProfilePage = () => {
                   onClick={() => setShowCurrentPassword((visible) => !visible)}
                   aria-label={
                     showCurrentPassword
-                      ? "Hide current password"
-                      : "Show current password"
+                      ? "Masquer le mot de passe actuel"
+                      : "Afficher le mot de passe actuel"
                   }
                   className="absolute inset-y-0 right-0 flex items-center pr-3 text-neutral-400 transition-colors hover:text-emerald-500 focus:outline-none focus:text-emerald-500"
                 >
@@ -141,7 +141,7 @@ const ProfilePage = () => {
 
             <div>
               <label className="block text-xs font-medium text-neutral-700 mb-1.5">
-                New Password
+                Nouveau mot de passe
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -159,8 +159,8 @@ const ProfilePage = () => {
                   onClick={() => setShowNewPassword((visible) => !visible)}
                   aria-label={
                     showNewPassword
-                      ? "Hide new password"
-                      : "Show new password"
+                      ? "Masquer le nouveau mot de passe"
+                      : "Afficher le nouveau mot de passe"
                   }
                   className="absolute inset-y-0 right-0 flex items-center pr-3 text-neutral-400 transition-colors hover:text-emerald-500 focus:outline-none focus:text-emerald-500"
                 >
@@ -175,7 +175,7 @@ const ProfilePage = () => {
 
             <div>
               <label className="block text-xs font-medium text-neutral-700 mb-1.5">
-                Confirm New Password
+                Confirmer le nouveau mot de passe
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -195,8 +195,8 @@ const ProfilePage = () => {
                   }
                   aria-label={
                     showConfirmNewPassword
-                      ? "Hide password confirmation"
-                      : "Show password confirmation"
+                      ? "Masquer la confirmation du mot de passe"
+                      : "Afficher la confirmation du mot de passe"
                   }
                   className="absolute inset-y-0 right-0 flex items-center pr-3 text-neutral-400 transition-colors hover:text-emerald-500 focus:outline-none focus:text-emerald-500"
                 >
@@ -210,7 +210,9 @@ const ProfilePage = () => {
             </div>
             <div className="flex justify-end">
               <Button type="submit" disabled={passwordLoading}>
-                {passwordLoading ? "Changing..." : "Change Password"}
+                {passwordLoading
+                  ? "Modification en cours..."
+                  : "Mettre à jour le mot de passe"}
               </Button>
             </div>
           </form>

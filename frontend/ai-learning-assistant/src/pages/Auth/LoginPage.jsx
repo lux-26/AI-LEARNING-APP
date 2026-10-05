@@ -1,4 +1,4 @@
-import React, { use, useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/authContext.jsx";
 import authService from "../../services/auth.Service.js";
@@ -23,6 +23,10 @@ const LonginPage = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
 
+  const togglePasswordVisibility = () => {
+    setShowPassword((previousValue) => !previousValue);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -30,13 +34,13 @@ const LonginPage = () => {
     try {
       const { token, user } = await authService.login(email, password);
       login(user, token);
-      toast.success("Logged in successfully!");
+      toast.success("Connexion réussie !");
       navigate("/dashboard");
     } catch (err) {
       setError(
-        err.message || "Failed to login. Please check your credentials.",
+        err.message || "Échec de la connexion. Vérifiez vos identifiants.",
       );
-      toast.error(err.message || "Failed to login");
+      toast.error(err.message || "Échec de la connexion.");
     } finally {
       setLoading(false);
     }
@@ -54,10 +58,10 @@ const LonginPage = () => {
               <BrainCircuit className="w-7 h-7 text-white" strokeWidth={2} />
             </div>
             <h1 className="text-2xl font-medium text-slate-900 tracking-tight mb-2">
-              Welcome back
+              Bon retour parmi nous
             </h1>
             <p className="text-slate-500 text-sm">
-              Sign in to continue your journey
+              Connectez-vous pour continuer votre parcours
             </p>
           </div>
           {/*Form*/}
@@ -65,7 +69,7 @@ const LonginPage = () => {
             {/*Email Field*/}
             <div className="space-y-2">
               <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wide">
-                Email
+                ADRESSE E-MAIL
               </label>
               <div className="relative group">
                 <div
@@ -80,7 +84,7 @@ const LonginPage = () => {
                   onFocus={() => setFocusedField("email")}
                   onBlur={() => setFocusedField(null)}
                   className="w-full h-12 pl-12 pr-4 border-2 border-slate-200 rounded-xl bg-slate-50/50 text-slate-900 placeholder-slate-400 text-sm font-medium transition-all duration-200 focus:outline-none focus:border-emerald-500 focus:bg-white focus:shadow-lg focus:shadow-emerald-500/10"
-                  placeholder="you@example.com"
+                  placeholder="vous@exemple.com"
                 />
               </div>
             </div>
@@ -88,7 +92,7 @@ const LonginPage = () => {
             {/*Password Field*/}
             <div className="space-y-2">
               <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wide">
-                Password
+                Mot de passe
               </label>
               <div className="relative group">
                 <div
@@ -108,7 +112,7 @@ const LonginPage = () => {
                   />
                   <button
                     type="button"
-                    onClick={() => setShowPassword((visible) => !visible)}
+                    onClick={togglePasswordVisibility}
                     aria-label={
                       showPassword
                         ? "Masquer le mot de passe"
@@ -145,11 +149,11 @@ const LonginPage = () => {
                 {loading ? (
                   <>
                     <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                    Signing in...
+                    Connexion en cours...
                   </>
                 ) : (
                   <>
-                    Sign in
+                    Se connecter
                     <ArrowRight
                       className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200"
                       strokeWidth={2.5}
@@ -164,12 +168,12 @@ const LonginPage = () => {
           {/*Footer*/}
           <div className="mt-8 pt-6 border-t border-slate-200/60">
             <p className="text-center text-sm text-slate-600">
-              Don't have an account?{" "}
+              Vous n’avez pas encore de compte ?{" "}
               <Link
                 to="/register"
                 className="font-semibold text-emerald-600 hover:text-emerald-700 transition-colors duration-200"
               >
-                Sign up
+                S’inscrire
               </Link>
             </p>
           </div>
@@ -177,7 +181,7 @@ const LonginPage = () => {
 
         {/*Subtle footer text*/}
         <p className="text-center text-xs text-slate-400 mt-6">
-          By continuing, you agree to our Terms & Privacy Policy
+          En continuant, vous acceptez nos Conditions d'utilisation et notre Politique de confidentialité
         </p>
       </div>
     </div>

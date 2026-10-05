@@ -6,23 +6,34 @@ import toast from "react-hot-toast";
 import MarkdownRenderer from "../common/MarkdownRenderer.jsx";
 import Modal from "../common/Modal.jsx";
 
-const AIActions = () => {
+const AIActions = ({ document }) => {
   const { id: documentId } = useParams();
   const [loadingAction, setLoadingAction] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalContent, setModalContent] = useState("");
   const [modalTitle, setModalTitle] = useState("");
   const [concept, setConcept] = useState("");
+  const documentTopic =
+    document?.mainTopic ||
+    (Array.isArray(document?.suggestedTopics)
+      ? document.suggestedTopics[0]
+      : null) ||
+    (Array.isArray(document?.keywords) ? document.keywords[0] : null);
+  const dynamicPlaceholder = documentTopic
+    ? `ex. « ${documentTopic} »`
+    : document?.title
+      ? `ex. « Un concept de ${document.title} »`
+      : "Entrez un mot-clé du document...";
 
   const handleGenerateSummary = async () => {
     setLoadingAction("summary");
     try {
       const { summary } = await aiService.generateSummary(documentId);
-      setModalTitle("Generated Summary");
+      setModalTitle("Résumé généré");
       setModalContent(summary);
       setIsModalOpen(true);
     } catch (error) {
-      toast.error("Failed to generate summary.");
+      toast.error("Échec de la génération du résumé.");
     } finally {
       setLoadingAction(null);
     }
@@ -31,7 +42,7 @@ const AIActions = () => {
   const handleExplainConcept = async (e) => {
     e.preventDefault();
     if (!concept.trim()) {
-      toast.error("Please enter a concept to explain.");
+      toast.error("Veuillez saisir un concept à expliquer.");
       return;
     }
     setLoadingAction("explain");
@@ -40,12 +51,12 @@ const AIActions = () => {
         documentId,
         concept,
       );
-      setModalTitle(`Explanation of "${concept}"`);
+      setModalTitle(`Explication de « ${concept} »`);
       setModalContent(explanation);
       setIsModalOpen(true);
       setConcept("");
     } catch (error) {
-      toast.error("Failed to explain concept.");
+      toast.error("Échec de l'explication du concept.");
     } finally {
       setLoadingAction(null);
     }
@@ -62,9 +73,9 @@ const AIActions = () => {
             </div>
             <div>
               <h3 className="text-lg font-semibold text-slate-900">
-                AI Assistant
+                Assistant IA
               </h3>
-              <p className="text-xs text-slate-500">Powered by advanced AI</p>
+              <p className="text-xs text-slate-500">Propulsé par une IA avancée</p>
             </div>
           </div>
         </div>
@@ -81,11 +92,11 @@ const AIActions = () => {
                     />
                   </div>
                   <h4 className="font-semibold text-slate-900">
-                    Generate Summary
+                    Générer un résumé
                   </h4>
                 </div>
                 <p className="text-slate-600 leading-relaxed">
-                  Get a concise summary of the entire document.
+                  Obtenez un résumé concis de l'ensemble du document.
                 </p>
               </div>
               <button
@@ -96,10 +107,10 @@ const AIActions = () => {
                 {loadingAction === "summary" ? (
                   <span className="flex items-center gap-2">
                     <div className="w-4 h-4 border-2 border-t-white rounded-full animate-spin" />
-                    Loading...
+                    Chargement...
                   </span>
                 ) : (
-                  "Summarize"
+                  "Résumer"
                 )}
               </button>
             </div>
@@ -116,19 +127,18 @@ const AIActions = () => {
                   />
                 </div>
                 <h4 className="font-semibold text-slate-900">
-                  Explain a Concept
+                  Expliquer un concept
                 </h4>
               </div>
               <p className="text-sm text-slate-600 leading-relaxed mb-4">
-                Enter a topic or concept from the document to get a detailed
-                explanation.
+                Entrez un sujet ou un concept du document pour obtenir une explication détaillée.
               </p>
               <div className="flex items-center gap-3">
                 <input
                   type="text"
                   value={concept}
                   onChange={(e) => setConcept(e.target.value)}
-                  placeholder="e.g., 'React Hooks'"
+                  placeholder={dynamicPlaceholder}
                   className="flex-1 h-11 px-4 border-2 border-slate-200 rounded-xl bg-slate-50/50 text-slate-900 placeholder-slate-400 text-sm font-medium transition-all duration-200 focus:outline-none focus:border-emerald-500 focus:bg-white focus:shadow-lg focus:shadow-purple-500/10"
                   disabled={loadingAction === "explain"}
                 />
@@ -140,10 +150,10 @@ const AIActions = () => {
                   {loadingAction === "explain" ? (
                     <span className="flex items-center gap-2">
                       <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      Loading...
+                      Chargement...
                     </span>
                   ) : (
-                    "Eplain"
+                    "Expliquer"
                   )}
                 </button>
               </div>
