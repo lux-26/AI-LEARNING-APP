@@ -4,6 +4,7 @@ import Quiz from "../models/Quiz.js";
 import { chunkText } from "../utils/textChunker.js";
 import fs from "fs/promises";
 import mongoose from "mongoose";
+import StudyProgress from "../models/StudyProgress.js";
 import { extractTextFromPDF } from "../utils/pdfParser.js";
 
 // @desc   upload PDF document
@@ -215,6 +216,39 @@ export const deleteDocument = async (req, res, next) => {
     res.status(200).json({
       success: true,
       message: "Document deleted successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+
+// @desc    Get study progress for a document
+// @route   GET /api/documents/:id/progress
+// @access  Private
+export const getDocumentProgress = async (req, res, next) => {
+  try {
+    const document = await Document.findOne({
+      _id: req.params.id,
+      userId: req.user._id,
+    }).select("_id");
+
+    if (!document) {
+      return res.status(404).json({
+        success: false,
+        error: "Document not found",
+        statusCode: 404,
+      });
+    }
+
+    const progress = await StudyProgress.findOne({
+      userId: req.user._id,
+      documentId: document._id,
+    });
+
+    res.status(200).json({
+      success: true,
+      data: progress || { userId: req.user._id, documentId: document._id, progress: 0 },
     });
   } catch (error) {
     next(error);
