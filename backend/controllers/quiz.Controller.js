@@ -224,3 +224,23 @@ export const deleteQuiz = async (req, res, next) => {
     next(error);
   }
 };
+
+
+// @desc      Get all quizzes for the authenticated user
+// @route     GET /api/quizzes
+// @access    Private
+export const getAllQuizzes = async (req, res, next) => {
+  try {
+    const quizzes = await Quiz.find({ userId: req.user._id })
+      .populate("documentId", "title")
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      count: quizzes.length,
+      data: quizzes,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
