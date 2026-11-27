@@ -6,6 +6,7 @@ import fs from "fs/promises";
 import path from "path";
 import mongoose from "mongoose";
 import StudyProgress from "../models/StudyProgress.js";
+import ChatHistory from "../models/ChatHistory.js";
 import { extractTextFromPDF } from "../utils/pdfParser.js";
 
 // @desc   upload PDF document
@@ -236,6 +237,10 @@ export const deleteDocument = async (req, res, next) => {
         userId: req.user._id,
       }),
       StudyProgress.deleteMany({
+        documentId: document._id,
+        userId: req.user._id,
+      }),
+      ChatHistory.deleteMany({
         documentId: document._id,
         userId: req.user._id,
       }),
