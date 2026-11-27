@@ -1,70 +1,144 @@
 # AI Learning App 🤖📚
 
-AI Learning App est un projet d'apprentissage assisté par l'intelligence artificielle. Le code du backend montre des fonctionnalités qui transforment les documents de l'utilisateur en ressources de révision.
+**AI Learning App** est une application web d'apprentissage assisté par l'intelligence artificielle. Elle permet de travailler à partir de documents PDF et de créer des ressources pour faciliter la révision.
 
-## Fonctionnalités présentes dans le code
+> Projet en développement. Les fonctionnalités, la configuration et les procédures décrites ici correspondent au code du dépôt et peuvent évoluer.
 
-- Génération de fiches de révision (*flashcards*) à partir d'un document
-- Génération de quiz personnalisés
-- Création de résumés de documents
-- Conversation avec un document à partir de passages pertinents
-- Enregistrement des ressources générées et de l'historique associé à l'utilisateur
+## Fonctionnalités
 
-La génération de contenu IA s'appuie sur un service Gemini côté backend.
+- Import et traitement de documents PDF.
+- Génération de fiches de révision (flashcards).
+- Génération de quiz à choix multiples.
+- Résumés de documents.
+- Chat avec un document et explications de notions.
+- Suivi des révisions et de l'activité.
+- Authentification par JWT et espace utilisateur.
 
-## Technologies repérées
+## Technologies
 
-**Frontend**
-- React
-- Vite
-- Tailwind CSS
-- React Router
-- Axios
+- **Frontend :** React, Vite, Tailwind CSS, React Router, Axios.
+- **Backend :** Node.js, Express.
+- **Base de données :** MongoDB avec Mongoose.
+- **IA :** Google Gemini via `@google/genai`.
+- **PDF :** `pdf-parse`.
 
-**Backend et données**
-- Node.js
-- API Express (architecture par contrôleurs)
-- MongoDB avec modèles Mongoose
-- Service IA Gemini
-
-## Organisation du dépôt
+## Structure du dépôt
 
 ```text
 AI-LEARNING-APP/
 ├── backend/
+│   ├── config/
 │   ├── controllers/
+│   ├── middleware/
 │   ├── models/
-│   └── utils/
+│   ├── routes/
+│   ├── utils/
+│   └── uploads/
 └── frontend/
     └── ai-learning-assistant/
         ├── public/
         └── src/
 ```
 
-## Démarrer le frontend
+## Prérequis
 
-Depuis le dossier du frontend :
+- Node.js et npm.
+- Une base MongoDB accessible.
+- Une clé API Google Gemini.
+
+## Installation et démarrage local
+
+### 1. Backend
+
+```bash
+cd backend
+npm install
+```
+
+Créez un fichier `.env` dans le dossier `backend/` (ne le commitez jamais) :
+
+```env
+PORT=8000
+NODE_ENV=development
+MONGODB_URI=your_mongodb_connection_string
+JWT_SECRET=your_long_random_secret
+JWT_EXPIRE=7d
+GEMINI_API_KEY=your_gemini_api_key
+MAX_FILE_SIZE=10485760
+```
+
+Lancez le backend :
+
+```bash
+npm run dev
+```
+
+Le script `npm start` lance le serveur avec Node directement.
+
+### 2. Frontend
+
+Dans un autre terminal :
 
 ```bash
 cd frontend/ai-learning-assistant
 npm install
+```
+
+Configurez la variable Vite `VITE_API_URL` (dans un fichier local `.env`, par exemple) avec l'adresse du backend, selon le format utilisé par l'application. Pour le backend local :
+
+```env
+VITE_API_URL=http://localhost:8000
+```
+
+Démarrez Vite :
+
+```bash
 npm run dev
 ```
 
-Pour compiler et vérifier le frontend :
+## Vérifications frontend
+
+Depuis `frontend/ai-learning-assistant/` :
 
 ```bash
 npm run build
 npm run lint
 ```
 
-## Configuration et exécution du backend
+## API backend (aperçu)
 
-Le backend nécessite une configuration locale pour la base de données et le fournisseur IA. Les instructions exactes de démarrage et les variables d'environnement doivent être complétées dans le projet avant un déploiement. Ne publiez jamais de fichier `.env`, de mot de passe ou de clé API dans le dépôt.
+Les routes d'authentification, documents, fiches, quiz, progression et IA sont regroupées sous `/api`. Les routes protégées nécessitent un jeton JWT dans l'en-tête :
 
-## Statut
+```
+Authorization: Bearer <token>
+```
 
-Projet en développement. La documentation de déploiement, les prérequis backend et les captures d'écran de l'application pourront être ajoutés au fur et à mesure de sa stabilisation.
+Principaux préfixes :
+
+- `/api/auth`
+- `/api/documents`
+- `/api/flashcards`
+- `/api/quizzes`
+- `/api/ai`
+- `/api/progress`
+- `/api/notifications`
+
+## Configuration de déploiement
+
+- Le backend utilise les variables d'environnement ci-dessus; aucune clé secrète ne doit être ajoutée au dépôt.
+- Le frontend doit recevoir `VITE_API_URL` correspondant au serveur API utilisé par l'environnement.
+- Les fichiers PDF sont stockés sur le système de fichiers du backend. **Un hébergement dont le disque est éphémère peut perdre ces fichiers lors d'un redémarrage ou d'un déploiement**; un stockage persistant doit être configuré pour la production.
+- Les modifications de code doivent être vérifiées et testées avant d'être déployées.
+
+## Sécurité et limites
+
+- Les fichiers téléversés sont destinés aux PDF; le backend vérifie le type et l'extension puis la signature du PDF lors de son traitement.
+- Les limites de génération de fiches et de quiz ajoutées sur la branche de corrections doivent être testées avant leur mise en production.
+- Ne partagez jamais les fichiers `.env`, les clés API, les mots de passe ou les jetons.
+
+## Statut du projet
+
+Application en développement et stabilisation. Les changements de sécurité et les procédures de déploiement doivent être validés dans un environnement de test avant toute mise en production.
 
 ## Auteur
 
