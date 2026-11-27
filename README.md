@@ -42,7 +42,8 @@ AI-LEARNING-APP/
 
 ## Prérequis
 
-- Node.js et npm.
+- **Node.js 20.19.0 ou une version ultérieure** (requis par la version de Mongoose utilisée par le backend).
+- npm (fourni avec Node.js).
 - Une base MongoDB accessible.
 - Une clé API Google Gemini.
 
@@ -128,6 +129,7 @@ Principaux préfixes :
 - Le backend utilise les variables d'environnement ci-dessus; aucune clé secrète ne doit être ajoutée au dépôt.
 - Le frontend doit recevoir `VITE_API_URL` correspondant au serveur API utilisé par l'environnement.
 - Les fichiers PDF sont stockés sur le système de fichiers du backend. **Un hébergement dont le disque est éphémère peut perdre ces fichiers lors d'un redémarrage ou d'un déploiement**; un stockage persistant doit être configuré pour la production.
+- Les dossiers `node_modules/` sont exclus du dépôt par les fichiers `.gitignore`. Ils doivent être recréés dans chaque environnement avec `npm install` (ou `npm ci` lorsque le lockfile est utilisé).
 - Les modifications de code doivent être vérifiées et testées avant d'être déployées.
 
 ## Sécurité et limites
