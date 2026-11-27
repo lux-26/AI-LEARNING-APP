@@ -138,7 +138,7 @@ Principaux préfixes :
 - La route de récupération d'un quiz masque les réponses correctes avant la soumission (branche de corrections; tests à effectuer).
 - Les opérations de génération IA sont limitées à 12 requêtes par utilisateur sur une fenêtre de 10 minutes (limiteur en mémoire de l'instance; tests à effectuer).
 - Ce limiteur est local à une instance et se réinitialise au redémarrage; en déploiement multi-instance, un stockage partagé serait nécessaire.
-- L'historique de chat conserve au maximum les 100 messages les plus récents (50 échanges). La réduction de l'historique existant se produit lors du prochain échange avec le document (branche de corrections; tests à effectuer).
+- L'historique de chat conserve au maximum les 100 messages les plus récents (50 échanges). La réduction de l'historique existant se produit lors du prochain échange avec le document (branche de corrections; tests à effectuer).\n- La réponse du changement de favori utilise désormais `message` et conserve l'ancien champ mal orthographié comme alias de compatibilité.
 - Ne partagez jamais les fichiers `.env`, les clés API, les mots de passe ou les jetons.
 
 ## Statut du projet
