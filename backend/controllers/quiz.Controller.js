@@ -56,7 +56,7 @@ export const submitQuiz = async (req, res, next) => {
   try {
     const { answers } = req.body;
 
-    if (!Array.isArray(answers)) {
+    if (!Array.isArray(answers) || answers.length === 0) {
       return res.status(400).json({
         success: false,
         error: "Please provide answers array",
@@ -85,30 +85,28 @@ export const submitQuiz = async (req, res, next) => {
       });
     }
 
-    // Process answers
+    // Validate and process answers without accepting duplicate or invalid indices.
     let correctCount = 0;
     const userAnswers = [];
+    const seenIndices = new Set();
 
-    answers.forEach((answer) => {
-      const { questionIndex, selectedAnswer } = answer;
-
-      if (questionIndex < quiz.questions.length) {
-        const question = quiz.questions[questionIndex];
-        const isCorrect = selectedAnswer === question.correctAnswer;
-
-        if (isCorrect) correctCount++;
-
-        userAnswers.push({
-          questionIndex,
-          selectedAnswer,
-          isCorrect,
-          answeredAt: new Date(),
-        });
+    for (const answer of answers) {
+      const { questionIndex, selectedAnswer } = answer ?? {};
+      if (!Number.isInteger(questionIndex) || questionIndex < 0 || questionIndex >= quiz.questions.length || seenIndices.has(questionIndex)) {
+        return res.status(400).json({ success: false, error: "Index de question invalide ou dupliqué", statusCode: 400 });
       }
-    });
+      if (typeof selectedAnswer !== "string" || !quiz.questions[questionIndex].options.includes(selectedAnswer)) {
+        return res.status(400).json({ success: false, error: "Réponse sélectionnée invalide", statusCode: 400 });
+      }
+      seenIndices.add(questionIndex);
+      const question = quiz.questions[questionIndex];
+      const isCorrect = selectedAnswer === question.correctAnswer;
+      if (isCorrect) correctCount++;
+      userAnswers.push({ questionIndex, selectedAnswer, isCorrect, answeredAt: new Date() });
+    }
 
     // Calculate score
-    const score = Math.round((correctCount / quiz.totalQuestions) * 100);
+    const score = quiz.totalQuestions > 0 ? Math.round((correctCount / quiz.totalQuestions) * 100) : 0;
 
     // Update quiz
     quiz.userAnswers = userAnswers;
