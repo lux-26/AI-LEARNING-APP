@@ -69,22 +69,39 @@ export const uploadDocument = async (req, res, next) => {
 // Helper function to process PDF
 const processPDF = async (documentId, filePath) => {
   try {
+    // Stop early if the document was deleted before processing started.
+    const existingDocument = await Document.exists({ _id: documentId });
+    if (!existingDocument) return;
+
     const { text } = await extractTextFromPDF(filePath);
 
     // Create chunks
     const chunks = chunkText(text, 500, 50);
 
-    //Update document
-    await Document.findByIdAndUpdate(documentId, {
-      extractedText: text,
-      chunks: chunks,
-      status: "ready",
-    });
+    // updateOne does not recreate a document that was deleted during processing.
+    const updateResult = await Document.updateOne(
+      { _id: documentId },
+      {
+        extractedText: text,
+        chunks,
+        status: "ready",
+      },
+    );
+
+    if (updateResult.matchedCount === 0) return;
+
     console.log(`Document ${documentId} processed successfully`);
   } catch (error) {
+    // A concurrent deletion is an expected outcome, not a processing failure.
+    const existingDocument = await Document.exists({ _id: documentId }).catch(() => null);
+    if (!existingDocument) return;
+
     console.error(`Error processing document ${documentId}:`, error);
-    await Document.findByIdAndUpdate(documentId, {
-      status: "fail",
+    await Document.updateOne(
+      { _id: documentId },
+      { status: "fail" },
+    ).catch((updateError) => {
+      console.error(`Could not update document ${documentId} status:`, updateError);
     });
   }
 };
@@ -207,9 +224,9 @@ export const deleteDocument = async (req, res, next) => {
       });
     }
 
-    // Remove only the study data owned by this user and linked to this document.
-    // Keep the document record until all related database cleanup operations succeed.
-    await Promise.all([
+    // Remove only this user's study data linked to this document.
+    // allSettled waits for every cleanup operation before reporting a failure.
+    const cleanupResults = await Promise.allSettled([
       Flashcard.deleteMany({
         documentId: document._id,
         userId: req.user._id,
@@ -224,7 +241,14 @@ export const deleteDocument = async (req, res, next) => {
       }),
     ]);
 
-    // Delete the document only after its associated study data has been cleaned up.
+    const cleanupFailure = cleanupResults.find(
+      (result) => result.status === "rejected",
+    );
+    if (cleanupFailure) {
+      throw cleanupFailure.reason;
+    }
+
+    // Delete the document only after all related cleanup operations have settled successfully.
     await document.deleteOne();
 
     // Delete the uploaded file safely, supporting new filenames and legacy URL records.
