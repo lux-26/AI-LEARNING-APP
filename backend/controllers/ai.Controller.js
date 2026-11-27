@@ -247,7 +247,13 @@ export const chat = async (req, res, next) => {
       },
     );
 
-    // Conserver uniquement les 100 messages les plus récents (50 échanges maximum).\n    // L'historique existant n'est tronqué qu'après un nouvel échange.\n    if (chatHistory.messages.length > 100) {\n      chatHistory.messages = chatHistory.messages.slice(-100);\n    }\n\n    await chatHistory.save();
+    // Conserver uniquement les 100 messages les plus récents (50 échanges maximum).
+    // L'historique existant n'est tronqué qu'après un nouvel échange.
+    if (chatHistory.messages.length > 100) {
+      chatHistory.messages = chatHistory.messages.slice(-100);
+    }
+
+    await chatHistory.save();
 
     res.status(200).json({
       success: true,
@@ -299,7 +305,9 @@ export const explainConcept = async (req, res, next) => {
 
     // Find relevant chunks for the concept
     const relevantChunks = findRelevantChunks(document.chunks, concept, 3);
-    const context = relevantChunks.map((c) => c.content).join("\n\n");
+    const context = relevantChunks.map((c) => c.content).join("
+
+");
 
     // Generate explanation using Gemini
     const explanation = await geminiService.explainConcept(concept, context);
