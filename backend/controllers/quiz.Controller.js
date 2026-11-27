@@ -40,9 +40,13 @@ export const getQuizById = async (req, res, next) => {
       });
     }
 
+    // Ne jamais exposer les réponses correctes avant la soumission du quiz.
+    const quizData = quiz.toObject();
+    quizData.questions = quizData.questions.map(({ correctAnswer, ...question }) => question);
+
     res.status(200).json({
       success: true,
-      data: quiz,
+      data: quizData,
     });
   } catch (error) {
     next(error);
