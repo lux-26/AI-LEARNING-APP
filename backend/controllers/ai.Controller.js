@@ -247,7 +247,7 @@ export const chat = async (req, res, next) => {
       },
     );
 
-    await chatHistory.save();
+    // Conserver uniquement les 100 messages les plus récents (50 échanges maximum).\n    // L'historique existant n'est tronqué qu'après un nouvel échange.\n    if (chatHistory.messages.length > 100) {\n      chatHistory.messages = chatHistory.messages.slice(-100);\n    }\n\n    await chatHistory.save();
 
     res.status(200).json({
       success: true,
