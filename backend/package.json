@@ -5,7 +5,9 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "nodemon server.js"
+    "dev": "nodemon server.js",
+    "audit:chat-history": "node scripts/audit-chat-history.js",
+    "migrate:chat-history-index": "node scripts/migrate-chat-history-index.js"
   },
   "keywords": [],
   "type": "module",
