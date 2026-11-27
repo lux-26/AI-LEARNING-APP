@@ -76,7 +76,7 @@ try {
     );
   });
 
-  if (existing?.unique === true) {
+  if (existing?.unique === true && !existing.sparse && !existing.partialFilterExpression) {
     console.log("The required unique index already exists. No change was necessary.");
   } else {
     let previousIndexDropped = false;
