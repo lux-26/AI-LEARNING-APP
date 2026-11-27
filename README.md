@@ -135,7 +135,7 @@ Principaux préfixes :
 - Les fichiers téléversés sont destinés aux PDF; le backend vérifie le type et l'extension puis la signature du PDF lors de son traitement.
 - Les limites de génération de fiches et de quiz ajoutées sur la branche de corrections doivent être testées avant leur mise en production.
 - Les contrôleurs IA limitent également les questions de chat à 2 000 caractères et les concepts à 500 caractères (branche de corrections; tests à effectuer).
-- La route de récupération d'un quiz masque les réponses correctes avant la soumission (branche de corrections; tests à effectuer).
+- La route de récupération d'un quiz masque les réponses correctes avant la soumission (branche de corrections; tests à effectuer).\n- Les opérations de génération IA sont limitées à 12 requêtes par utilisateur sur une fenêtre de 10 minutes (limiteur en mémoire de l'instance; tests à effectuer).\n- Ce limiteur est local à une instance et se réinitialise au redémarrage; en déploiement multi-instance, un stockage partagé serait nécessaire.
 - Ne partagez jamais les fichiers `.env`, les clés API, les mots de passe ou les jetons.
 
 ## Statut du projet
