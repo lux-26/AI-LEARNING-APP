@@ -1,60 +1,77 @@
 const errorHandler = (err, req, res, next) => {
-  // Détermination du code de statut HTTP (par défaut 500 si non spécifié)
-  let statusCode = err.statusCode || 500;
-  // Message d'erreur par défaut
+  // Laisser Express gérer la réponse si les en-têtes ont déjà été envoyés.
+  if (res.headersSent) {
+    return next(err);
+  }
+
+  const isDevelopment = process.env.NODE_ENV === "development";
+  let statusCode = Number(err.statusCode) || 500;
   let message = err.message || "Erreur serveur";
 
-  // Gestion des erreurs Mongoose : ID invalide (CastError)
+  // Éviter les codes HTTP invalides ou hors de la plage des erreurs.
+  if (statusCode < 400 || statusCode > 599) {
+    statusCode = 500;
+  }
+
+  // Erreurs Mongoose : identifiant invalide.
   if (err.name === "CastError") {
     message = "Ressource introuvable";
     statusCode = 400;
   }
 
-  // Gestion des erreurs Mongoose : Doublon de clé unique (ex: email ou username déjà pris)
+  // Erreurs Mongoose : doublon sur un champ unique.
   if (err.code === 11000) {
-    const field = Object.keys(err.keyValue)[0];
-    message = `${field} already exists`;
+    const field = Object.keys(err.keyValue || {})[0];
+    message = field ? `${field} already exists` : "Une valeur existe déjà";
     statusCode = 400;
   }
 
-  // Gestion des erreurs Mongoose : Erreur de validation des champs requis/format
+  // Erreurs Mongoose : validation des champs.
   if (err.name === "ValidationError") {
-    message = Object.values(err.errors)
-      .map((val) => val.message)
-      .join(",");
+    message = Object.values(err.errors || {})
+      .map((value) => value.message)
+      .filter(Boolean)
+      .join(",") || "Données invalides";
     statusCode = 400;
   }
 
-  // Gestion des erreurs Multer : Dépassement de la taille limite du fichier
+  // Erreurs Multer : dépassement de la taille maximale du fichier.
   if (err.code === "LIMIT_FILE_SIZE") {
     message = "La taille du fichier dépasse la limite maximale de 10 Mo";
     statusCode = 400;
   }
 
-  // Gestion des erreurs liées aux jetons JWT : Jeton invalide (corrigé de 'Invaled' à 'Invalid')
+  // Erreurs JWT.
   if (err.name === "JsonWebTokenError") {
     message = "Jeton invalide";
     statusCode = 401;
   }
 
-  // Gestion des erreurs liées aux jetons JWT : Jeton expiré
   if (err.name === "TokenExpiredError") {
     message = "Jeton expiré";
     statusCode = 401;
   }
 
-  // Affichage de la pile d'erreurs (stack trace) dans la console uniquement en mode développement
-  console.error("Erreur :", {
-    stack: process.env.NODE_ENV === "development" ? err.stack : undefined,
+  // Les détails techniques restent dans les journaux du serveur.
+  console.error("Erreur API :", {
+    name: err.name,
+    message: err.message,
+    method: req.method,
+    path: req.originalUrl,
+    stack: err.stack,
   });
 
-  // Envoi de la réponse JSON standardisée d'erreur au client
+  // En production, ne jamais transmettre le détail d'une erreur 5xx au client.
+  const responseMessage =
+    statusCode >= 500 && !isDevelopment
+      ? "Une erreur interne est survenue."
+      : message;
+
   res.status(statusCode).json({
     success: false,
-    error: message,
+    error: responseMessage,
     statusCode,
-    // Ajoute la propriété 'stack' dans la réponse uniquement si l'on est en mode développement
-    ...(process.env.NODE_ENV === "development" && { stack: err.stack }),
+    ...(isDevelopment && { stack: err.stack }),
   });
 };
 
