@@ -305,9 +305,7 @@ export const explainConcept = async (req, res, next) => {
 
     // Find relevant chunks for the concept
     const relevantChunks = findRelevantChunks(document.chunks, concept, 3);
-    const context = relevantChunks.map((c) => c.content).join("
-
-");
+    const context = relevantChunks.map((c) => c.content).join("\n\n");
 
     // Generate explanation using Gemini
     const explanation = await geminiService.explainConcept(concept, context);
