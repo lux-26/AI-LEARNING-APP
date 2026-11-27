@@ -182,6 +182,10 @@ export const chat = async (req, res, next) => {
   try {
     const { documentId, question } = req.body;
 
+    if (typeof question !== "string" || !question.trim() || question.length > 2000) {
+      return res.status(400).json({ success: false, error: "La question doit contenir entre 1 et 2000 caractères", statusCode: 400 });
+    }
+
     if (!documentId || !question) {
       return res.status(400).json({
         success: false,
@@ -266,6 +270,10 @@ export const chat = async (req, res, next) => {
 export const explainConcept = async (req, res, next) => {
   try {
     const { documentId, concept } = req.body;
+
+    if (typeof concept !== "string" || !concept.trim() || concept.length > 500) {
+      return res.status(400).json({ success: false, error: "Le concept doit contenir entre 1 et 500 caractères", statusCode: 400 });
+    }
 
     if (!documentId || !concept) {
       return res.status(400).json({
