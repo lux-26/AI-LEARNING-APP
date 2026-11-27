@@ -3,6 +3,7 @@ import Flashcard from "../models/Flashcard.js";
 import Quiz from "../models/Quiz.js";
 import { chunkText } from "../utils/textChunker.js";
 import fs from "fs/promises";
+import path from "path";
 import mongoose from "mongoose";
 import StudyProgress from "../models/StudyProgress.js";
 import { extractTextFromPDF } from "../utils/pdfParser.js";
@@ -33,16 +34,15 @@ export const uploadDocument = async (req, res, next) => {
       });
     }
 
-    // Construct the URL for the uploaded file
-    const baseUrl = `http://localhost:${process.env.PORT || 8000}`;
-    const fileUrl = `${baseUrl}/uploads/documents/${req.file.filename}`;
+    // Store only the generated filename; build public URLs separately when needed.
+    const storedFileName = req.file.filename;
 
     // Create document record
     const document = await Document.create({
       userId: req.user._id,
       title,
       fileName: req.file.originalname,
-      filePath: fileUrl,
+      filePath: storedFileName,
       fileSize: req.file.size,
       status: "processing",
     });
@@ -84,7 +84,7 @@ const processPDF = async (documentId, filePath) => {
   } catch (error) {
     console.error(`Error processing document ${documentId}:`, error);
     await Document.findByIdAndUpdate(documentId, {
-      status: "failed",
+      status: "fail",
     });
   }
 };
@@ -207,8 +207,12 @@ export const deleteDocument = async (req, res, next) => {
       });
     }
 
-    // Delete file from filesystem
-    await fs.unlink(document.filePath).catch(() => {});
+    // Delete uploaded file safely, supporting both new filenames and legacy URL records.
+    const storedFileName = path.basename(document.filePath || "");
+    if (storedFileName) {
+      const filePath = path.join(process.cwd(), "uploads", "documents", storedFileName);
+      await fs.unlink(filePath).catch(() => {});
+    }
 
     // Delete document
     await document.deleteOne();
