@@ -11,11 +11,20 @@ export const extractTextFromPDF = async (filePath) => {
     // 1. Lit le fichier PDF sur le disque sous forme de tampon (Buffer) de manière asynchrone
     const dataBuffer = await fs.readFile(filePath);
 
+    // Verify the PDF signature instead of trusting the upload MIME type alone.
+    if (dataBuffer.length < 5 || dataBuffer.subarray(0, 5).toString() !== "%PDF-") {
+      throw new Error("Invalid PDF file signature");
+    }
+
     // pdf-parse attend un Uint8Array et non un Buffer
     const parser = new PDFParse(new Uint8Array(dataBuffer));
 
     // 2. Passe le tampon à la bibliothèque pdf-parse pour extraire les données du document
-    const data = await await parser.getText();
+    const data = await parser.getText();
+
+    if (!data.text || !data.text.trim()) {
+      throw new Error("PDF contains no extractable text");
+    }
 
     // 3. Retourne un objet propre contenant le texte, le nombre de pages et les métadonnées du fichier
     return {
