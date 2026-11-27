@@ -134,6 +134,7 @@ Principaux préfixes :
 
 - Les fichiers téléversés sont destinés aux PDF; le backend vérifie le type et l'extension puis la signature du PDF lors de son traitement.
 - Les limites de génération de fiches et de quiz ajoutées sur la branche de corrections doivent être testées avant leur mise en production.
+- Les contrôleurs IA limitent également les questions de chat à 2 000 caractères et les concepts à 500 caractères (branche de corrections; tests à effectuer).
 - Ne partagez jamais les fichiers `.env`, les clés API, les mots de passe ou les jetons.
 
 ## Statut du projet
