@@ -131,6 +131,14 @@ export const getProfile = async (req, res, next) => {
     // req.user._id est injecté par le middleware 'protect'
     const user = await User.findById(req.user._id);
 
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        error: "Utilisateur introuvable",
+        statusCode: 404,
+      });
+    }
+
     res.status(200).json({
       success: true,
       data: {
@@ -160,10 +168,24 @@ export const updateProfile = async (req, res, next) => {
 
     const user = await User.findById(req.user._id);
 
-    // Mise à jour conditionnelle des champs modifiés
-    if (username) user.username = username;
-    if (email) user.email = email;
-    if (profileImage) user.profileImage = profileImage;
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        error: "Utilisateur introuvable",
+        statusCode: 404,
+      });
+    }
+
+    // Mise à jour uniquement des champs explicitement fournis.
+    if (Object.prototype.hasOwnProperty.call(req.body, "username")) {
+      user.username = username;
+    }
+    if (Object.prototype.hasOwnProperty.call(req.body, "email")) {
+      user.email = email;
+    }
+    if (Object.prototype.hasOwnProperty.call(req.body, "profileImage")) {
+      user.profileImage = profileImage;
+    }
 
     await user.save();
 
@@ -199,6 +221,14 @@ export const changePassword = async (req, res, next) => {
 
     // Récupération de l'utilisateur avec son mot de passe actuel
     const user = await User.findById(req.user._id).select("+password");
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        error: "Utilisateur introuvable",
+        statusCode: 404,
+      });
+    }
 
     // Vérification du mot de passe actuel
     const isMatch = await user.matchPassword(currentPassword);
