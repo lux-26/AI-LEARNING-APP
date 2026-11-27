@@ -150,6 +150,7 @@ Principaux préfixes :
 - L'historique de chat conserve au maximum les 100 messages les plus récents (50 échanges). La réduction de l'historique existant se produit lors du prochain échange avec le document (branche de corrections; tests à effectuer).
 - La réponse du changement de favori utilise désormais `message` et conserve l'ancien champ mal orthographié comme alias de compatibilité.
 - La liste des documents est triée selon le champ de date de téléversement réellement défini dans le modèle (`UploadDate`).
+- En production, le middleware d'erreurs renvoie un message générique pour les erreurs serveur (5xx); les détails techniques restent dans les journaux du backend. Les messages des erreurs client connues (4xx) restent explicites. En développement, la pile d'erreurs peut être incluse dans la réponse pour faciliter le diagnostic.
 - Ne partagez jamais les fichiers `.env`, les clés API, les mots de passe ou les jetons.
 
 ## Statut du projet
