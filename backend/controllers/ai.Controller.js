@@ -12,6 +12,16 @@ export const generateFlashcards = async (req, res, next) => {
   try {
     const { documentId, count = 10 } = req.body;
 
+    const requestedCount = Number(count);
+    if (!Number.isInteger(requestedCount) || requestedCount < 1 || requestedCount > 30) {
+      return res.status(400).json({ success: false, error: "Le nombre de fiches doit être compris entre 1 et 30", statusCode: 400 });
+    }
+
+    const requestedQuestions = Number(numQuestions);
+    if (!Number.isInteger(requestedQuestions) || requestedQuestions < 1 || requestedQuestions > 20) {
+      return res.status(400).json({ success: false, error: "Le nombre de questions doit être compris entre 1 et 20", statusCode: 400 });
+    }
+
     if (!documentId) {
       return res.status(400).json({
         success: false,
@@ -37,7 +47,7 @@ export const generateFlashcards = async (req, res, next) => {
     // Generate flashcards using Gemini
     const cards = await geminiService.generateFlashcards(
       document.extractedText,
-      parseInt(count),
+      requestedCount,
     );
 
     // Save to database
@@ -95,7 +105,7 @@ export const generateQuiz = async (req, res, next) => {
     // Generate quiz using Gemini
     const questions = await geminiService.generateQuiz(
       document.extractedText,
-      parseInt(numQuestions),
+      requestedQuestions,
     );
 
     // Save to database
