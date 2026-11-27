@@ -164,6 +164,7 @@ npm run audit:chat-history
 ```
 
 - L'audit est en lecture seule : il signale les groupes en doublon (même `userId` et `documentId`) ainsi que les historiques dont le document associé n'existe plus.
+- Il importe les modèles Mongoose `ChatHistory` et `Document` et utilise les noms de collections réellement déclarés par ces modèles, y compris si une collection personnalisée est configurée.
 - Il ne supprime, ne fusionne et ne modifie aucune donnée.
 
 La création de l'index unique est une opération distincte et potentiellement bloquante. Avant de l'exécuter :
@@ -178,9 +179,9 @@ La migration est volontairement protégée par deux confirmations explicites :
 CONFIRM_CHAT_HISTORY_INDEX_MIGRATION=YES PAUSE_APP_WRITES=YES npm run migrate:chat-history-index
 ```
 
-Cette commande vérifie à nouveau l'absence de doublons. Elle ne fusionne ni ne supprime les historiques. Si l'index non unique existant doit être remplacé, elle le retire avant de créer l'index unique ; exécutez-la uniquement pendant une fenêtre de maintenance avec les écritures arrêtées. **Ne lancez pas cette migration sur la base de production sans sauvegarde et validation préalable.**
+Cette commande vérifie à nouveau l'absence de doublons et utilise la collection déclarée par le modèle `ChatHistory`. Elle ne fusionne ni ne supprime les historiques. Si l'index composé existant doit être remplacé, le script mémorise sa définition, le retire puis tente de créer l'index unique. En cas d'échec de création, il tente de restaurer l'index précédent et signale explicitement un éventuel échec de restauration. Cette récupération automatique est une mesure de précaution, pas un substitut à une sauvegarde et à une procédure de restauration vérifiée. Exécutez-la uniquement pendant une fenêtre de maintenance avec les écritures arrêtées. **Ne lancez pas cette migration sur la base de production sans sauvegarde et validation préalable.**
 
-Cette préparation ne corrige pas encore, à elle seule, la course entre une génération Gemini et la suppression d'un document. Le correctif applicatif correspondant doit coordonner les écritures du chat et la suppression dans une transaction MongoDB prise en charge par un replica set, ou adopter une stratégie équivalente validée pour l'infrastructure utilisée. Aucun changement de base ni test destructif n'est exécuté par ces scripts.
+Cette préparation ne corrige pas encore la course entre une génération Gemini et la suppression d'un document, ni les créations concurrentes d'historiques avant la pose de l'index unique. Le contrôleur doit encore coordonner l'enregistrement final de la réponse et la suppression du document. Avant de choisir une transaction MongoDB ou une autre stratégie, il faut vérifier la topologie réelle de la base (transactions disponibles, replica set ou cluster shardé) et couvrir tous les chemins d'écriture concernés. Aucun changement de base ni test destructif n'est exécuté par ces scripts.
 
 ## Statut du projet
 
