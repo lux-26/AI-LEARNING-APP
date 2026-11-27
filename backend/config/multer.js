@@ -18,13 +18,13 @@ const storage = multer.diskStorage({
   },
   filename: (req, file, cb) => {
     const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(null, `${uniqueSuffix}-${file.originalname}`);
+    cb(null, `${uniqueSuffix}.pdf`);
   },
 });
 
 // Filtre de fichiers : PDF uniquement
 const fileFilter = (req, file, cb) => {
-  if (file.mimetype === "application/pdf") {
+  if (file.mimetype === "application/pdf" && path.extname(file.originalname).toLowerCase() === ".pdf") {
     cb(null, true);
   } else {
     cb(new Error("Seuls les fichiers PDF sont autorisés !"), false);
