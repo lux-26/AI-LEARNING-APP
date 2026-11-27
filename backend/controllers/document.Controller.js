@@ -129,7 +129,7 @@ export const getDocuments = async (req, res, next) => {
         },
       },
       {
-        $sort: { uploadDate: -1 },
+        $sort: { UploadDate: -1 },
       },
     ]);
 
