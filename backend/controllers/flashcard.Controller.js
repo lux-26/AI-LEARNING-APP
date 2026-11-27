@@ -158,6 +158,8 @@ export const toggleStarFlashcard = async (req, res, next) => {
     res.status(200).json({
       success: true,
       data: flashcardSet,
+      message: `Fiche ${flashcardSet.cards[cardIndex].isStarred ? "ajoutée aux favoris" : "retirée des favoris"}`,
+      // Alias temporaire pour compatibilité avec d’anciens clients.
       messsage: `Fiche ${flashcardSet.cards[cardIndex].isStarred ? "ajoutée aux favoris" : "retirée des favoris"}`,
     });
   } catch (error) {
