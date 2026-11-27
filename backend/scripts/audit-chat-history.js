@@ -1,5 +1,7 @@
 import "dotenv/config";
 import mongoose from "mongoose";
+import Document from "../models/Document.js";
+import ChatHistory from "../models/ChatHistory.js";
 
 const mongoUri = process.env.MONGODB_URI;
 if (!mongoUri) {
@@ -9,16 +11,32 @@ if (!mongoUri) {
 
 try {
   await mongoose.connect(mongoUri);
-  const collection = mongoose.connection.collection("chathistories");
+
+  // Use model metadata so custom collection names remain supported.
+  const chatCollection = ChatHistory.collection;
+  const documentCollectionName = Document.collection.collectionName;
 
   const [duplicateGroups, orphanGroups] = await Promise.all([
-    collection.aggregate([
-      { $group: { _id: { userId: "$userId", documentId: "$documentId" }, count: { $sum: 1 }, ids: { $push: "$_id" } } },
+    chatCollection.aggregate([
+      {
+        $group: {
+          _id: { userId: "$userId", documentId: "$documentId" },
+          count: { $sum: 1 },
+          ids: { $push: "$_id" },
+        },
+      },
       { $match: { count: { $gt: 1 } } },
       { $project: { _id: 1, count: 1, ids: 1 } },
     ]).toArray(),
-    collection.aggregate([
-      { $lookup: { from: "documents", localField: "documentId", foreignField: "_id", as: "document" } },
+    chatCollection.aggregate([
+      {
+        $lookup: {
+          from: documentCollectionName,
+          localField: "documentId",
+          foreignField: "_id",
+          as: "document",
+        },
+      },
       { $match: { document: { $eq: [] } } },
       { $project: { _id: 1, userId: 1, documentId: 1 } },
     ]).toArray(),
@@ -26,6 +44,8 @@ try {
 
   console.log(JSON.stringify({
     readOnly: true,
+    chatHistoryCollection: chatCollection.collectionName,
+    documentCollection: documentCollectionName,
     duplicateGroupCount: duplicateGroups.length,
     duplicateGroups,
     orphanHistoryCount: orphanGroups.length,
