@@ -33,12 +33,14 @@ try {
   }
 
   const indexes = await collection.indexes();
-  const existing = indexes.find(
-    (index) =>
-      index.name === "userId_1_documentId_1" &&
-      index.key?.userId === 1 &&
-      index.key?.documentId === 1,
-  );
+  const existing = indexes.find((index) => {
+    const keys = Object.keys(index.key || {});
+    return (
+      keys.length === 2 &&
+      index.key.userId === 1 &&
+      index.key.documentId === 1
+    );
+  });
 
   if (existing?.unique === true) {
     console.log("The required unique index already exists. No change was necessary.");
