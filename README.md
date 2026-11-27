@@ -155,6 +155,33 @@ Principaux préfixes :
 - En production, le middleware d'erreurs renvoie un message générique pour les erreurs serveur (5xx); les détails techniques restent dans les journaux du backend. Les messages des erreurs client connues (4xx) restent explicites. En développement, la pile d'erreurs peut être incluse dans la réponse pour faciliter le diagnostic.
 - Ne partagez jamais les fichiers `.env`, les clés API, les mots de passe ou les jetons.
 
+## Audit et migration de l'historique de chat
+
+Depuis `backend/`, les commandes suivantes permettent de préparer la sécurisation de l'unicité des historiques :
+
+```bash
+npm run audit:chat-history
+```
+
+- L'audit est en lecture seule : il signale les groupes en doublon (même `userId` et `documentId`) ainsi que les historiques dont le document associé n'existe plus.
+- Il ne supprime, ne fusionne et ne modifie aucune donnée.
+
+La création de l'index unique est une opération distincte et potentiellement bloquante. Avant de l'exécuter :
+1. Faites une sauvegarde MongoDB.
+2. Examinez le rapport d'audit et résolvez manuellement tout doublon après avoir défini quelle conversation conserver.
+3. Mettez l'application en maintenance et arrêtez les écritures sur les historiques.
+4. Vérifiez que la base et la procédure de retour arrière sont prêtes.
+
+La migration est volontairement protégée par deux confirmations explicites :
+
+```bash
+CONFIRM_CHAT_HISTORY_INDEX_MIGRATION=YES PAUSE_APP_WRITES=YES npm run migrate:chat-history-index
+```
+
+Cette commande vérifie à nouveau l'absence de doublons. Elle ne fusionne ni ne supprime les historiques. Si l'index non unique existant doit être remplacé, elle le retire avant de créer l'index unique ; exécutez-la uniquement pendant une fenêtre de maintenance avec les écritures arrêtées. **Ne lancez pas cette migration sur la base de production sans sauvegarde et validation préalable.**
+
+Cette préparation ne corrige pas encore, à elle seule, la course entre une génération Gemini et la suppression d'un document. Le correctif applicatif correspondant doit coordonner les écritures du chat et la suppression dans une transaction MongoDB prise en charge par un replica set, ou adopter une stratégie équivalente validée pour l'infrastructure utilisée. Aucun changement de base ni test destructif n'est exécuté par ces scripts.
+
 ## Statut du projet
 
 Application en développement et stabilisation. Les changements de sécurité et les procédures de déploiement doivent être validés dans un environnement de test avant toute mise en production.
