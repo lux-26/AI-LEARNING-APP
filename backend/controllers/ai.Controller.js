@@ -17,11 +17,6 @@ export const generateFlashcards = async (req, res, next) => {
       return res.status(400).json({ success: false, error: "Le nombre de fiches doit être compris entre 1 et 30", statusCode: 400 });
     }
 
-    const requestedQuestions = Number(numQuestions);
-    if (!Number.isInteger(requestedQuestions) || requestedQuestions < 1 || requestedQuestions > 20) {
-      return res.status(400).json({ success: false, error: "Le nombre de questions doit être compris entre 1 et 20", statusCode: 400 });
-    }
-
     if (!documentId) {
       return res.status(400).json({
         success: false,
@@ -79,6 +74,11 @@ export const generateFlashcards = async (req, res, next) => {
 export const generateQuiz = async (req, res, next) => {
   try {
     const { documentId, numQuestions = 5, title } = req.body;
+
+    const requestedQuestions = Number(numQuestions);
+    if (!Number.isInteger(requestedQuestions) || requestedQuestions < 1 || requestedQuestions > 20) {
+      return res.status(400).json({ success: false, error: "Le nombre de questions doit être compris entre 1 et 20", statusCode: 400 });
+    }
 
     if (!documentId) {
       return res.status(404).json({
