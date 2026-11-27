@@ -43,9 +43,13 @@ const DocumentDetailPage = () => {
       return filePath;
     }
 
-    // const baseUrl = import.meta.env.VITE_API_URL || "http://localhost:8000";
-    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
-    return `${baseUrl}${filePath.startsWith("/") ? "" : "/"}${filePath}`;
+    const apiBaseUrl = (import.meta.env.VITE_API_URL || "http://localhost:8000").replace(/\/+$/, "");
+    const normalizedPath = filePath.replace(/^\/+/, "");
+    const pdfPath = normalizedPath.startsWith("uploads/")
+      ? `/${normalizedPath}`
+      : `/uploads/documents/${normalizedPath}`;
+
+    return `${apiBaseUrl}${pdfPath}`;
   };
 
   const renderContent = () => {
