@@ -132,6 +132,9 @@ Principaux préfixes :
 
 ## Sécurité et limites
 
+- Le backend refuse de démarrer si `JWT_SECRET` est absent ou vide; cette variable doit être configurée dans l'environnement d'exécution et ne doit jamais être commitée.
+- Le middleware d'authentification exige un en-tête `Authorization: Bearer <token>` correctement formé et rejette les en-têtes incomplets ou mal formés.
+- Lorsqu'une requête protégée renvoie une réponse 401 avec un jeton, le frontend efface les données de session locales et met à jour l'état d'authentification. Les réponses 401 des routes de connexion et d'inscription ne déclenchent pas cette déconnexion automatique.
 - Les routes de profil valident désormais le nom d'utilisateur, l'adresse e-mail et la valeur de l'image de profil; la modification exige au moins un champ reconnu.
 - Le changement de mot de passe valide les deux champs et impose une longueur de 6 à 128 caractères au nouveau mot de passe.
 - Les contrôleurs du profil et du changement de mot de passe renvoient une réponse 404 explicite si le compte n'existe plus. La suppression d'une image de profil peut être demandée en envoyant `profileImage: null`.
