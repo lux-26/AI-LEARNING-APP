@@ -207,15 +207,33 @@ export const deleteDocument = async (req, res, next) => {
       });
     }
 
-    // Delete uploaded file safely, supporting both new filenames and legacy URL records.
+    // Remove only the study data owned by this user and linked to this document.
+    // Keep the document record until all related database cleanup operations succeed.
+    await Promise.all([
+      Flashcard.deleteMany({
+        documentId: document._id,
+        userId: req.user._id,
+      }),
+      Quiz.deleteMany({
+        documentId: document._id,
+        userId: req.user._id,
+      }),
+      StudyProgress.deleteMany({
+        documentId: document._id,
+        userId: req.user._id,
+      }),
+    ]);
+
+    // Delete the document only after its associated study data has been cleaned up.
+    await document.deleteOne();
+
+    // Delete the uploaded file safely, supporting new filenames and legacy URL records.
+    // A missing/unavailable local file must not prevent the database deletion from succeeding.
     const storedFileName = path.basename(document.filePath || "");
     if (storedFileName) {
       const filePath = path.join(process.cwd(), "uploads", "documents", storedFileName);
       await fs.unlink(filePath).catch(() => {});
     }
-
-    // Delete document
-    await document.deleteOne();
 
     res.status(200).json({
       success: true,
