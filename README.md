@@ -132,6 +132,9 @@ Principaux préfixes :
 
 ## Sécurité et limites
 
+- Les routes de profil valident désormais le nom d'utilisateur, l'adresse e-mail et la valeur de l'image de profil; la modification exige au moins un champ reconnu.
+- Le changement de mot de passe valide les deux champs et impose une longueur de 6 à 128 caractères au nouveau mot de passe.
+- Les contrôleurs du profil et du changement de mot de passe renvoient une réponse 404 explicite si le compte n'existe plus. La suppression d'une image de profil peut être demandée en envoyant `profileImage: null`.
 - Les fichiers téléversés sont destinés aux PDF; le backend vérifie le type et l'extension puis la signature du PDF lors de son traitement.
 - Les limites de génération de fiches et de quiz ajoutées sur la branche de corrections doivent être testées avant leur mise en production.
 - Les contrôleurs IA limitent également les questions de chat à 2 000 caractères et les concepts à 500 caractères (branche de corrections; tests à effectuer).
