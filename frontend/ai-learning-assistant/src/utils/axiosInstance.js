@@ -30,6 +30,24 @@ axiosInstance.interceptors.response.use(
     return response;
   },
   (error) => {
+    const requestUrl = error.config?.url || "";
+    const sentAuthorization = error.config?.headers?.Authorization;
+    const isPublicAuthRequest = /\/auth\/(login|register)(?:[/?]|$)/i.test(
+      requestUrl,
+    );
+
+    // Une réponse 401 à une requête protégée invalide la session locale.
+    // Les erreurs d'identifiants sur login/register ne déclenchent pas cette action.
+    if (
+      error.response?.status === 401 &&
+      sentAuthorization &&
+      !isPublicAuthRequest
+    ) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      window.dispatchEvent(new Event("auth:session-expired"));
+    }
+
     if (error.response) {
       if (error.response.status === 500) {
         console.error("Erreur serveur. Veuillez réessayer plus tard.");
