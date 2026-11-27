@@ -21,6 +21,12 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.join(__dirname, ".env") });
 
+// Refuse de démarrer si la clé JWT indispensable à la signature des jetons est absente.
+if (!process.env.JWT_SECRET?.trim()) {
+  console.error("Configuration invalide : la variable JWT_SECRET est obligatoire.");
+  process.exit(1);
+}
+
 // Initialisation de l'application Express
 const app = express();
 
